@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee">
+
+    <servlet>
+        <servlet-name>dataServlet</servlet-name>
+        <servlet-class>com.behavox.titanView.servlets.DataServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dataServlet</servlet-name>
+        <url-pattern>/data/*</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>graphTx</filter-name>
+        <filter-class>com.behavox.titanView.TransactionFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>graphTx</filter-name>
+        <servlet-name>dataServlet</servlet-name>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>cfgReloader</servlet-name>
+        <servlet-class>com.behavox.titanView.servlets.ConfigReloaderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cfgReloader</servlet-name>
+        <url-pattern>/reloadCfg</url-pattern>
+    </servlet-mapping>
+
+    <!--<servlet>-->
+        <!--<servlet-name>defaultMapping</servlet-name>-->
+        <!--<servlet-class>com.behavox.titanView.servlets.VertexListServletlet</servlet-class>-->
+    <!--</servlet>-->
+
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>defaultMapping</servlet-name>-->
+        <!--<url-pattern>/vertex/*</url-pattern>-->
+    <!--</servlet-mapping>-->
+</web-app>

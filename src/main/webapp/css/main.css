@@ -1,0 +1,21 @@
+body {
+    padding: 5px;
+}
+
+.vertexDiv {
+    padding: 5px 0;
+}
+
+.vertex {
+    padding: 4px;
+    border: 1px solid black;
+    border-radius: 3px;
+
+    background: #eee;
+
+    display: inline-block;
+}
+
+.edgeGroup {
+    padding-top: 25px;
+}
