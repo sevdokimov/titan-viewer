@@ -116,7 +116,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.behavox.titanView.Launcher</mainClass>
+                            <mainClass>com.behavox.titanView.TitanViewerMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

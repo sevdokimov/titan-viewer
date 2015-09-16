@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Properties;
 
-public class Launcher {
+public class TitanViewerMain {
 
     private static Server server;
 
@@ -26,7 +26,7 @@ public class Launcher {
 
         StdErrLog.setProperties(p);
 
-        URL webXmlRes = Launcher.class.getClassLoader().getResource("webapp/WEB-INF/web.xml");
+        URL webXmlRes = TitanViewerMain.class.getClassLoader().getResource("webapp/WEB-INF/web.xml");
 
         String webXmlStr = webXmlRes.toString();
 
@@ -45,7 +45,7 @@ public class Launcher {
 
             webAppCtx.setResourceBase(moduleRoot.getAbsolutePath() + "/src/main/webapp");
 
-            URL classesUrl = Launcher.class.getProtectionDomain().getCodeSource().getLocation();
+            URL classesUrl = TitanViewerMain.class.getProtectionDomain().getCodeSource().getLocation();
 
             webAppCtx.getMetaData().setWebInfClassesDirs(Collections.singletonList(Resource.newResource(classesUrl)));
 
