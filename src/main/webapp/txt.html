@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TextConverter</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+</head>
+
+<body>
+
+<h3>Code</h3>
+<textarea id="textBox" onchange="update()" onkeyup="update()" onkeydown="update()" rows="10"
+          style="width: 100%; margin: 20px">22-159- 16-165-160-114-116- 37-109-101-110-116-105-111-110-101-228
+</textarea>
+
+<h3>Decoded chars</h3>
+<div id="result" style="margin: 20px; background: #eee; padding: 5px;min-height: 100px">
+
+</div>
+
+<script>
+    var savedVar = null
+
+    function update() {
+        var val = $('#textBox').val()
+
+        if (val == savedVar)
+            return
+
+        savedVar = val
+
+        var res = ""
+
+        var lines = val.split("\n")
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i]
+
+            var tokens = line.split(/[\s\-]+/)
+
+            for (var k = 0; k < tokens.length; k++) {
+                var s = tokens[k]
+
+                if (/\d+/.test(s)) {
+                    res = res + String.fromCharCode(parseInt(s))
+                }
+                else {
+                    res += s;
+                }
+            }
+
+            res += "<br>"
+        }
+
+        $('#result').html(res)
+    }
+
+    update()
+</script>
+
+</body>
+</html>
