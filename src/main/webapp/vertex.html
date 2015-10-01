@@ -3,13 +3,17 @@
         <div class="col-md-3">
             <h3>Incoming edges</h3>
 
+            <div ng-if="!inE">
+                Loading...
+            </div>
+
             <div class="edgeGroup" ng-repeat="(label, edgeList) in inE">
                 <a href="javascript:;" data-toggle="collapse" data-target="#edgeLabelIn_{{label}}">{{label}}</a>
 
                 <div id="edgeLabelIn_{{label}}" class="edgeGroupIn collapse in">
                     <div class="vertexDiv" ng-repeat="e in edgeList.edges">
                         <div class="vertex {{e.shortView.cls}}" vId="{{e.shortView.id}}">
-                            <a ng-href="#/vertex/{{e.shortView.id}}" class="vId">{{e.shortView.id}}</a>
+                            <a ng-href="#/g/{{table}}/vertex/{{e.shortView.id}}" class="vId">{{e.shortView.id}}</a>
                             <span class="vIcon"></span>
                             <span ng-bind-html="e.shortView.body"></span>
                         </div>
@@ -33,13 +37,17 @@
         <div class="col-md-3">
             <h3>Outcoming edges</h3>
 
+            <div ng-if="!outE">
+                Loading...
+            </div>
+
             <div class="edgeGroup" ng-repeat="(label, edgeList) in outE">
                 <a href="javascript:;" data-toggle="collapse" data-target="#edgeLabelOut_{{label}}">{{label}}</a>
 
                 <div id="edgeLabelOut_{{label}}" class="edgeGroupIn collapse in">
                     <div class="vertexDiv" ng-repeat="e in edgeList.edges">
                         <div class="vertex {{e.shortView.cls}}" vId="{{e.shortView.id}}">
-                            <a ng-href="#/vertex/{{e.shortView.id}}" class="vId">{{e.shortView.id}}</a>
+                            <a ng-href="#/g/{{table}}/vertex/{{e.shortView.id}}" class="vId">{{e.shortView.id}}</a>
                             <span class="vIcon"></span>
                             <span ng-bind-html="e.shortView.body"></span>
                         </div>

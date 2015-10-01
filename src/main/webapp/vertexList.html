@@ -2,19 +2,23 @@
     <div class="row">
         <h1>Vertexes</h1>
 
-        <div ng-if="!vertexes">
+        <div ng-if="errorMsg">
+            {{errorMsg}}
+        </div>
+
+        <div ng-if="!vertexes && !errorMsg">
             Loading...
         </div>
 
         <div ng-if="vertexes">
-            <div ng-if="vertexes.length == 0">
+            <div ng-if="vertexes.length == 0" class="notFound">
                 No vertexes found.
             </div>
 
             <div class="vertexList">
                 <div class="vertexDiv" ng-repeat="v in vertexes">
                     <div class="vertex {{v.cls}}" vId="{{v.id}}">
-                        <a ng-href="#/vertex/{{v.id}}" class="vId">{{v.id}}</a>
+                        <a ng-href="#/g/{{table}}/vertex/{{v.id}}" class="vId">{{v.id}}</a>
                         <span class="vIcon"></span>
                         <span ng-bind-html="v.body"></span>
                     </div>

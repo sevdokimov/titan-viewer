@@ -27,6 +27,10 @@ public class GraphManager {
 
     private static final String DB_HOST = "127.0.0.1";
 
+    private static final ImmutableSet<String> SHORT_TITAN_COLUMNS = ImmutableSet.of("e", "f", "g", "h", "i", "l", "m", "s", "t");
+    private static final ImmutableSet<String> LONG_TITAN_COLUMNS = ImmutableSet.of("edgestore", "edgestore_lock_", "graphindex", "graphindex_lock_",
+            "system_properties", "system_properties_lock_", "systemlog", "titan_ids", "txlog");
+
     private static final GraphManager instance = new GraphManager();
 
     private final Map<String, CompletableFuture<TitanGraph>> graphMap = new ConcurrentHashMap<>();
@@ -86,12 +90,11 @@ public class GraphManager {
     private static boolean isTitanTable(HTableDescriptor tableDescriptor) {
         Set<String> names = Stream.of(tableDescriptor.getColumnFamilies()).map(HColumnDescriptor::getNameAsString).collect(Collectors.toSet());
 
-        if (names.equals(ImmutableSet.of("e", "f", "g", "h", "i", "l", "m", "s", "t"))) {
+        if (names.containsAll(SHORT_TITAN_COLUMNS)) {
             return true;
         }
 
-        if (names.equals(ImmutableSet.of("edgestore", "edgestore_lock_", "graphindex", "graphindex_lock_",
-                "system_properties", "system_properties_lock_", "systemlog", "titan_ids", "txlog"))) {
+        if (names.containsAll(LONG_TITAN_COLUMNS)) {
             return true;
         }
 

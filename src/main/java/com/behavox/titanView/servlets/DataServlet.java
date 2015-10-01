@@ -107,7 +107,7 @@ public class DataServlet extends AbstractServlet {
                 graph = null;
             }
 
-            throw Throwables.propagate(t);
+            resp.sendError(505, "Internal error: " + t.toString());
         } finally {
             if (graph != null)
                 graph.commit();

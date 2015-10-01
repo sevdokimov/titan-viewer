@@ -19,3 +19,8 @@ body {
 .edgeGroup {
     padding-top: 25px;
 }
+
+.notFound {
+    color: #999;
+    font-style: italic;
+}
