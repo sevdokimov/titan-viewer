@@ -33,43 +33,49 @@ public class GraphManager {
 
     private HBaseAdmin admin;
 
-    private TitanGraph safeGet(CompletableFuture<TitanGraph> future) {
-        try {
-            return future.get();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException();
-        } catch (ExecutionException e) {
-            throw Throwables.propagate(e.getCause());
-        }
-    }
-
     @NotNull
     public TitanGraph getGraph(@NotNull String tableName) {
-        CompletableFuture<TitanGraph> future = graphMap.get(tableName);
+        while (true) {
+            CompletableFuture<TitanGraph> future = graphMap.get(tableName);
 
-        if (future != null) {
-            return safeGet(future);
-        }
+            if (future == null) {
+                future = new CompletableFuture<>();
 
-        future = new CompletableFuture<>();
+                CompletableFuture<TitanGraph> old = graphMap.putIfAbsent(tableName, future);
 
-        CompletableFuture<TitanGraph> old = graphMap.putIfAbsent(tableName, future);
+                if (old == null) {
+                    try {
+                        TitanGraph titanGraph = TitanFactory.build().set("storage.backend", "hbase").set("storage.hbase.table", tableName).open();
 
-        if (old != null) {
-            return safeGet(old);
-        }
+                        future.complete(titanGraph);
 
-        try {
-            TitanGraph titanGraph = TitanFactory.build().set("storage.backend", "hbase").set("storage.hbase.table", tableName).open();
+                        return titanGraph;
+                    } catch (Throwable t) {
+                        future.completeExceptionally(t);
 
-            future.complete(titanGraph);
+                        throw t;
+                    }
+                }
 
-            return titanGraph;
-        } catch (Throwable t) {
-            future.completeExceptionally(t);
+                future = old;
+            }
 
-            throw t;
+            TitanGraph res;
+
+            try {
+                res = future.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException();
+            } catch (ExecutionException e) {
+                throw Throwables.propagate(e.getCause());
+            }
+
+            if (res.isOpen()) {
+                return res;
+            }
+
+            graphMap.remove(tableName, future);
         }
     }
 
