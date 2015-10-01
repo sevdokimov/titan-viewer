@@ -11,16 +11,6 @@
         <url-pattern>/data/*</url-pattern>
     </servlet-mapping>
 
-    <filter>
-        <filter-name>graphTx</filter-name>
-        <filter-class>com.behavox.titanView.TransactionFilter</filter-class>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>graphTx</filter-name>
-        <servlet-name>dataServlet</servlet-name>
-    </filter-mapping>
-
     <servlet>
         <servlet-name>cfgReloader</servlet-name>
         <servlet-class>com.behavox.titanView.servlets.ConfigReloaderServlet</servlet-class>

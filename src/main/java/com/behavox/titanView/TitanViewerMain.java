@@ -89,8 +89,6 @@ public class TitanViewerMain {
             return;
         }
 
-        GraphManager.getInstance().initGraph(args[0]);
-
         startup(45700);
 
         System.out.println("http://localhost:45700");

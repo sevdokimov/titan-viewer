@@ -33,10 +33,6 @@ public abstract class AbstractServlet extends HttpServlet {
         return request.get();
     }
 
-    protected TitanGraph getGraph() {
-        return (TitanGraph) getRequest().getAttribute("g");
-    }
-
     protected Config getConfig() {
         return (Config) getRequest().getAttribute("cfg");
     }

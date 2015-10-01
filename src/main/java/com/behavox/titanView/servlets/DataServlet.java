@@ -1,9 +1,11 @@
 package com.behavox.titanView.servlets;
 
+import com.behavox.titanView.GraphManager;
 import com.behavox.titanView.Utils;
 import com.behavox.titanView.json.FullVertexJson;
 import com.behavox.titanView.json.ShortEdgeJson;
 import com.behavox.titanView.json.ShortVertexJson;
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.thinkaurelius.titan.core.TitanEdge;
 import com.thinkaurelius.titan.core.TitanGraph;
@@ -33,9 +35,12 @@ public class DataServlet extends AbstractServlet {
             if (Modifier.isPublic(method.getModifiers())) {
                 Class<?>[] parameterTypes = method.getParameterTypes();
 
-                if (parameterTypes.length == 2
+                if ((parameterTypes.length == 2
                         && parameterTypes[0].equals(TitanGraph.class)
-                        && parameterTypes[1].equals(HttpServletRequest.class)) {
+                        && parameterTypes[1].equals(HttpServletRequest.class))
+                        || (
+                        parameterTypes.length == 1 && parameterTypes[0].equals(HttpServletRequest.class)
+                        )) {
                     Method oldMethod = methods.put(method.getName(), method);
 
                     assert oldMethod == null;
@@ -54,24 +59,58 @@ public class DataServlet extends AbstractServlet {
 
         Method method = methods.get(methodName);
 
-        Object res;
+        Object[] args;
 
-        try {
-            res = method.invoke(this, getGraph(), req);
-        } catch (InvocationTargetException e) {
-            if (e.getCause() instanceof IOException) {
-                throw (IOException) e.getCause();
+        TitanGraph graph = null;
+
+        if (method.getParameters().length == 2) {
+            String table = req.getParameter("table");
+
+            if (Strings.isNullOrEmpty(table)) {
+                resp.sendError(404, "Required parameter 'table' is not present");
+
+                return;
             }
 
-            throw Throwables.propagate(e);
-        } catch (IllegalAccessException e) {
-            throw Throwables.propagate(e);
+            graph = GraphManager.getInstance().getGraph(table);
+
+            args = new Object[]{graph, req};
+        }
+        else {
+            args = new Object[]{req};
         }
 
-        if (method.getReturnType().equals(Object.class)) {
-            Utils.GSON.toJson(res, resp.getWriter());
-        } else {
-            Utils.GSON.toJson(res, method.getGenericReturnType(), resp.getWriter());
+        try {
+            Object res;
+
+            try {
+                res = method.invoke(this, args);
+            } catch (InvocationTargetException e) {
+                if (e.getCause() instanceof IOException) {
+                    throw (IOException) e.getCause();
+                }
+
+                throw Throwables.propagate(e);
+            } catch (IllegalAccessException e) {
+                throw Throwables.propagate(e);
+            }
+
+            if (method.getReturnType().equals(Object.class)) {
+                Utils.GSON.toJson(res, resp.getWriter());
+            } else {
+                Utils.GSON.toJson(res, method.getGenericReturnType(), resp.getWriter());
+            }
+
+        } catch (Throwable t) {
+            if (graph != null) {
+                graph.rollback();
+                graph = null;
+            }
+
+            throw Throwables.propagate(t);
+        } finally {
+            if (graph != null)
+                graph.commit();
         }
     }
 
@@ -143,6 +182,10 @@ public class DataServlet extends AbstractServlet {
         }
 
         return res;
+    }
+
+    public List<String> tableList(HttpServletRequest req) throws IOException {
+        return GraphManager.getInstance().loadTables();
     }
 
     private static class VertexListResult {

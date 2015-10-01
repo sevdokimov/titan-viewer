@@ -6,15 +6,19 @@ titanViewApp.config(['$routeProvider',
     function($routeProvider) {
 
         $routeProvider.
-            when('/vertex/:vId', {
+            when('/', {
+                templateUrl: 'selectGraph.html',
+                controller: 'selectGraphCtrl'
+            }).
+            when('/g/:table/vertex/:vId', {
                 templateUrl: 'vertex.html',
                 controller: 'vertexCtrl'
             }).
-            when('/vertexList', {
+            when('/g/:table/vertexList', {
                 templateUrl: 'vertexList.html',
-                controller: 'vertexList'
+                controller: 'vertexListCtrl'
             }).
             otherwise({
-                redirectTo: '/vertexList'
+                redirectTo: '/'
             });
     }]);

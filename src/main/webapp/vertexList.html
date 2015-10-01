@@ -2,12 +2,22 @@
     <div class="row">
         <h1>Vertexes</h1>
 
-        <div class="vertexList">
-            <div class="vertexDiv" ng-repeat="v in vertexes">
-                <div class="vertex {{v.cls}}" vId="{{v.id}}">
-                    <a ng-href="#/vertex/{{v.id}}" class="vId">{{v.id}}</a>
-                    <span class="vIcon"></span>
-                    <span ng-bind-html="v.body"></span>
+        <div ng-if="!vertexes">
+            Loading...
+        </div>
+
+        <div ng-if="vertexes">
+            <div ng-if="vertexes.length == 0">
+                No vertexes found.
+            </div>
+
+            <div class="vertexList">
+                <div class="vertexDiv" ng-repeat="v in vertexes">
+                    <div class="vertex {{v.cls}}" vId="{{v.id}}">
+                        <a ng-href="#/vertex/{{v.id}}" class="vId">{{v.id}}</a>
+                        <span class="vIcon"></span>
+                        <span ng-bind-html="v.body"></span>
+                    </div>
                 </div>
             </div>
         </div>

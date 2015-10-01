@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="row">
+        <h3>List of graph in the HBase</h3>
+
+        <div style="color: red" ng-if="errorMsg">
+            {{errorMsg}}
+        </div>
+
+        <div ng-if="!errorMsg">
+            <div ng-if="!tableList">
+                Loading...
+            </div>
+
+            <div ng-if="tableList && tableList.length > 0">
+                <div ng-repeat="table in tableList" style="padding: 3px">
+                    <a ng-href="/#/g/{{table}}/vertexList">{{table}}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
