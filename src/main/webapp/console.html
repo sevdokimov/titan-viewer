@@ -2,10 +2,11 @@
     <div class="row">
         <h2>Gremlin console</h2>
 
-        <div id="queryEditor">g.V</div>
+        <div id="queryEditor" onkeydown="editorKeyPressed(event)">g.V</div>
 
         <div id="consoleControls">
-            <button ng-click="executeQuery()">Execute query</button>
+            <button id="executeBtn" ng-click="executeQuery()" class="btn btn-primary"
+                    ng-disabled="loading" title="Execute query (Ctrl + Enter)">Execute query</button>
         </div>
 
         <script>
@@ -20,6 +21,12 @@
                 fontSize: 14
             })
             editor.getSession().setMode("ace/mode/groovy");
+
+            function editorKeyPressed(evt) {
+                if (evt.keyCode == 13 && evt.ctrlKey) {
+                    $('#executeBtn').click()
+                }
+            }
 
             $('#queryEditor')[0].editorInstance = editor
         </script>

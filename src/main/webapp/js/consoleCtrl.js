@@ -14,7 +14,7 @@ titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams) {
     $scope.executeQuery = function() {
         var query = $('#queryEditor')[0].editorInstance.getValue().trim()
 
-        if (query == "") {
+        if (query == "" || $scope.loading) {
             return
         }
 
