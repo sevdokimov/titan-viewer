@@ -83,16 +83,11 @@ public class TitanViewerMain {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
-            System.out.println("No arguments, please specify titan configuration properties file");
+        int port = Integer.parseInt(System.getProperty("port", "45700"));
 
-            return;
-        }
-
-        startup(45700);
+        startup(port);
 
         System.out.println("http://localhost:45700");
-
     }
 
 }
