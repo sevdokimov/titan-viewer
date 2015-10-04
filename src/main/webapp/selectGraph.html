@@ -10,11 +10,11 @@
             <div ng-repeat="table in tableList" style="padding: 3px">
                     <span ng-if="table.isOpen" style="color: green"
                           class="glyphicon glyphicon-transfer"
-                          title="Graph is open"
+                          title="Connection established"
                     ></span>
                     <span ng-if="!table.isOpen"
                           class="glyphicon glyphicon-th"
-                          title="Graph is closed"
+                          title="Disconnected"
                     ></span>
                 <a ng-href="#/g/{{table.name}}/console">{{table.name}}</a>
             </div>
