@@ -87,7 +87,7 @@ public class TitanViewerMain {
 
         startup(port);
 
-        System.out.println("http://localhost:45700");
+        System.out.println("http://localhost:" + port);
     }
 
 }
