@@ -10,7 +10,7 @@
 
     <properties>
         <jetty.version>9.3.3.v20150827</jetty.version>
-        <titan.version>0.5.4</titan.version>
+        <titan.version>0.5.2</titan.version>
     </properties>
 
     <dependencies>
