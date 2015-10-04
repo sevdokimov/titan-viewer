@@ -1,0 +1,84 @@
+<div class="container-fluid">
+    <div class="row">
+        <h2>Gremlin console</h2>
+
+        <div id="queryEditor">g.V</div>
+
+        <div id="consoleControls">
+            <button ng-click="executeQuery()">Execute query</button>
+        </div>
+
+        <script>
+            var editor = ace.edit("queryEditor");
+            //editor.setTheme("ace/theme/monokai");
+            editor.setOptions({
+                showPrintMargin: false,
+                highlightActiveLine: false,
+                highlightGutterLine: false,
+                showLineNumbers: false,
+                showGutter: false,
+                fontSize: 14
+            })
+            editor.getSession().setMode("ace/mode/groovy");
+
+            $('#queryEditor')[0].editorInstance = editor
+        </script>
+    </div>
+
+    <div class="row">
+        <div style="height: 10px"></div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div ng-if="loading">
+                    Executing query: <b>{{currentQuery}}</b>
+                </div>
+                <div ng-if="res">
+                    Result of <b>{{currentQuery}}</b>
+
+                    <small>(<span title="Count of shown elements">{{res.elements.length}}</span> /
+                        <span ng-if="res.hasNext" title="Result set is very bid, some elements are hidden">*</span><span title="Count of elements in result set" ng-if="!res.hasNext">{{res.elements.length}}</span>,
+                        <span title="Query execution duration">{{res.executionTime}}ms</span>)</small>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div ng-if="loading">
+                    <img src="img/progress.gif"> Executing...
+                </div>
+
+                <div ng-if="res && res.error" class="queryError">{{res.error}}</div>
+
+                <div ng-if="res && !res.error" class="queryResult">
+                    <div ng-if="res.elements.length == 0" class="notFound">
+                        No elements
+                    </div>
+
+                    <div ng-repeat="e in res.elements track by $index">
+                        <div ng-switch="typeOf(e)">
+                            <div ng-switch-when="null" class="resElement null">null</div>
+                            <div ng-switch-when="number" class="resElement number">{{e}}</div>
+                            <div ng-switch-when="string" class="resElement string">{{e}}</div>
+                            <div ng-switch-when="boolean" class="resElement boolean">{{e}}</div>
+
+                            <div ng-switch-when="O" class="resElement object">
+                                <span class="cls"><span ng-non-bindable>{</span>{{e.cls}}<span ng-non-bindable>}</span></span> <span>{{e.toString}}</span>
+                            </div>
+
+                            <div ng-switch-when="V" class="vertexDiv">
+                                <div class="vertex {{e.cls}}" vId="{{e.id}}">
+                                    <a ng-href="#/g/{{table}}/vertex/{{e.id}}" class="vId">{{e.id}}</a>
+                                    <span class="vIcon"></span>
+                                    <span ng-bind-html="e.body"></span>
+                                </div>
+                            </div>
+
+                            <div ng-switch-default class="jsonObject">
+                                {{stringify(e)}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ShortVertexJson {
 
+    private final String _type_ = "V";
+
     private final long id;
 
     private final String cls;

@@ -3,8 +3,8 @@ package com.behavox.titanView.servlets;
 import com.behavox.titanView.GraphManager;
 import com.behavox.titanView.Utils;
 import com.behavox.titanView.json.FullVertexJson;
+import com.behavox.titanView.json.ObjectJson;
 import com.behavox.titanView.json.ShortEdgeJson;
-import com.behavox.titanView.json.ShortVertexJson;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.thinkaurelius.titan.core.TitanEdge;
@@ -12,8 +12,12 @@ import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.TitanVertex;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.gremlin.groovy.jsr223.GremlinGroovyScriptEngine;
+import com.tinkerpop.gremlin.java.GremlinPipeline;
 
+import javax.script.Bindings;
+import javax.script.CompiledScript;
+import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -49,6 +53,8 @@ public class DataServlet extends AbstractServlet {
             }
         }
     }
+
+    private final GremlinGroovyScriptEngine engine = new GremlinGroovyScriptEngine();
 
     @Override
     protected void processGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -115,22 +121,65 @@ public class DataServlet extends AbstractServlet {
         }
     }
 
-    public Object vertexList(TitanGraph g, HttpServletRequest req) {
+    public QueryResult vertexList(TitanGraph g, HttpServletRequest req) {
         int limit = getIntParam("limit", 50);
 
-        VertexListResult res = new VertexListResult();
+        QueryResult res = new QueryResult();
 
-        for (Iterator<Vertex> itr = g.getVertices().iterator(); itr.hasNext(); ) {
-            TitanVertex vertex = (TitanVertex) itr.next();
+        long startTime = System.currentTimeMillis();
 
-            res.vertexes.add(Utils.format(vertex));
+        res.fillElements(g.getVertices().iterator(), limit);
 
-            if (res.vertexes.size() >= limit) {
-                res.hasNext = itr.hasNext();
+        res.executionTime = System.currentTimeMillis() - startTime;
 
-                break;
-            }
+        return res;
+    }
+
+    public QueryResult executeQuery(TitanGraph g, HttpServletRequest req) {
+        int limit = getIntParam("limit", 50);
+
+        QueryResult res = new QueryResult();
+
+        String scriptSource = req.getParameter("query");
+        if (scriptSource == null || scriptSource.isEmpty()) {
+            res.error = "Script is empty";
+
+            return res;
         }
+
+        scriptSource = scriptSource.trim();
+
+        CompiledScript compiledScript;
+
+        try {
+            compiledScript = engine.compile(scriptSource);
+        } catch (ScriptException e) {
+            res.error = Utils.toString(e);
+
+            return res;
+        }
+
+        final Bindings bindings = engine.createBindings();
+        bindings.put("g", g);
+
+        long startTime = System.currentTimeMillis();
+
+        try {
+            Object r = compiledScript.eval(bindings);
+
+            if (r instanceof GremlinPipeline) {
+                Iterator<Object> itr = ((GremlinPipeline) r).iterator();
+
+                res.fillElements(itr, limit);
+            }
+            else {
+                res.convertAndAdd(r);
+            }
+        } catch (ScriptException e) {
+            res.error = Utils.toString(e);
+        }
+
+        res.executionTime = System.currentTimeMillis() - startTime;
 
         return res;
     }
@@ -191,10 +240,38 @@ public class DataServlet extends AbstractServlet {
                 .collect(Collectors.toList());
     }
 
-    private static class VertexListResult {
-        public final List<ShortVertexJson> vertexes = new ArrayList<>();
+    private static class QueryResult {
+        public final List<Object> elements = new ArrayList<>();
 
         public boolean hasNext;
+
+        private String error;
+
+        private long executionTime;
+
+        public void fillElements(Iterator<?> itr, int limit) {
+            while (itr.hasNext()) {
+                convertAndAdd(itr.next());
+
+                if (elements.size() >= limit) {
+                    hasNext = itr.hasNext();
+
+                    break;
+                }
+            }
+        }
+
+        public void convertAndAdd(Object o) {
+            if (o == null || o instanceof Number || o instanceof String || o instanceof Boolean) {
+                elements.add(o);
+            }
+            else if (o instanceof TitanVertex) {
+                elements.add(Utils.format((TitanVertex) o));
+            }
+            else {
+                elements.add(new ObjectJson(o));
+            }
+        }
     }
 
     private static class EdgeListResult {

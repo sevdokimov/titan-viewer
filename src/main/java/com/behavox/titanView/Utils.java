@@ -12,6 +12,8 @@ import com.thinkaurelius.titan.core.TitanVertex;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,5 +51,15 @@ public class Utils {
         }
 
         return res;
+    }
+
+    public static String toString(Throwable t) {
+        StringWriter stringWriter = new StringWriter();
+
+        try (PrintWriter pw = new PrintWriter(stringWriter)) {
+            t.printStackTrace(pw);
+        }
+
+        return stringWriter.toString();
     }
 }

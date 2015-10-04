@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ShortEdgeJson {
 
+    private final String _type_ = "E";
+
     private final String id;
 
     private final String label;

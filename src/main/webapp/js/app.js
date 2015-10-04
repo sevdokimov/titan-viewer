@@ -14,9 +14,9 @@ titanViewApp.config(['$routeProvider',
                 templateUrl: 'vertex.html',
                 controller: 'vertexCtrl'
             }).
-            when('/g/:table/vertexList', {
-                templateUrl: 'vertexList.html',
-                controller: 'vertexListCtrl'
+            when('/g/:table/console', {
+                templateUrl: 'console.html',
+                controller: 'consoleCtrl'
             }).
             otherwise({
                 redirectTo: '/'

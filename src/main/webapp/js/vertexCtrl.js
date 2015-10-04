@@ -23,20 +23,6 @@ titanViewApp.controller('vertexCtrl', function ($scope, $http, $routeParams) {
         })
 });
 
-titanViewApp.controller('vertexListCtrl', function ($scope, $http, $routeParams) {
-    $scope.table = $routeParams.table
-    $scope.vertexes = null
-
-    $http.get("/data/vertexList", {params: {table: $routeParams.table}}).then(function (response) {
-        var data = response.data
-
-        $scope.errorMsg = null
-        $scope.vertexes = data.vertexes
-    }, function(response) {
-        window.location = "/remoteError.html"
-    })
-});
-
 titanViewApp.controller('selectGraphCtrl', function ($scope, $http, $location) {
     $http.get("/data/tableList").then(function (response) {
         $scope.tableList = response.data

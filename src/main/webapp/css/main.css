@@ -24,3 +24,40 @@ body {
     color: #999;
     font-style: italic;
 }
+
+#queryEditor {
+    height: 140px;
+    width: 100%;
+
+    border: 2px solid;
+    background-color: #f0f0f0 !important;
+}
+
+#consoleControls {
+    padding: 10px;
+}
+
+.resultTime {
+
+}
+
+.queryResult .null, .queryResult .boolean {
+    color: #008;
+}
+
+.queryResult .number {
+    color: #00f;
+}
+
+.queryResult .string {
+    color: #080;
+}
+
+.queryResult .cls {
+    color: #888;
+}
+
+.queryError {
+    color: #f00;
+    white-space: pre;
+}
