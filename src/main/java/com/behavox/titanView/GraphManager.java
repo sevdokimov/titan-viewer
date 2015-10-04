@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 public class GraphManager {
 
-    private static final int CONNECTION_KEEP_TIME = 5 * 60 * 1000;
+    private static final long CONNECTION_KEEP_TIME = Long.parseLong(System.getProperty("keepConnection", String.valueOf(10 * 60 * 1000)));
 
     private static final String DB_HOST = "127.0.0.1";
 
