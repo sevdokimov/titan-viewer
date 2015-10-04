@@ -1,12 +1,11 @@
 package com.behavox.titanView;
 
+import com.behavox.titanView.json.ShortEdgeJson;
 import com.behavox.titanView.json.ShortVertexJson;
-import com.behavox.titanView.viewModel.Config;
-import com.behavox.titanView.viewModel.DefaultFormatter;
-import com.behavox.titanView.viewModel.NodeFormatter;
-import com.behavox.titanView.viewModel.NodeType;
+import com.behavox.titanView.viewModel.*;
 import com.google.gson.Gson;
 import com.thinkaurelius.titan.core.EdgeLabel;
+import com.thinkaurelius.titan.core.TitanEdge;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.TitanVertex;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
@@ -31,10 +30,23 @@ public class Utils {
     public static ShortVertexJson format(@NotNull TitanVertex v) {
         Config cfg = ConfigManager.getInstance().getConfig();
 
-        NodeFormatter formatter = cfg.getNodeTypes().stream().filter(nt -> nt.getPredicate().test(v)).findFirst()
-                .map(NodeType::getFormatter).orElse(DefaultFormatter.INSTANCE);
+        ElementType<TitanVertex, ShortVertexJson> type = cfg.findType(v);
+
+        ElementFormatter<TitanVertex, ShortVertexJson> formatter = type != null
+                ? type.getFormatter()
+                : DefaultVertexFormatter.INSTANCE;
 
         return formatter.format(v);
+    }
+
+    public static String format(@NotNull TitanEdge edge) {
+        Config cfg = ConfigManager.getInstance().getConfig();
+
+        ElementType<TitanEdge, String> type = cfg.findType(edge);
+
+        ElementFormatter<TitanEdge, String> formatter = type != null ? type.getFormatter() : DefaultEdgeFormatter.INSTANCE;
+
+        return formatter.format(edge);
     }
 
     public static List<String> getEdgeLabels(TitanGraph g) {

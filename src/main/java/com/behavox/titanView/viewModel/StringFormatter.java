@@ -14,7 +14,7 @@ import java.util.List;
 /**
  *
  */
-public class StringFormatter implements NodeFormatter {
+public class StringFormatter implements ElementFormatter<TitanVertex, ShortVertexJson> {
 
     private final List<String> props = new ArrayList<>();
 

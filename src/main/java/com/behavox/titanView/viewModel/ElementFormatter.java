@@ -1,15 +1,16 @@
 package com.behavox.titanView.viewModel;
 
 import com.behavox.titanView.json.ShortVertexJson;
+import com.thinkaurelius.titan.core.TitanElement;
 import com.thinkaurelius.titan.core.TitanVertex;
 import org.jetbrains.annotations.NotNull;
 
 /**
  *
  */
-public interface NodeFormatter {
+public interface ElementFormatter<T extends TitanElement, R> {
 
     @NotNull
-    ShortVertexJson format(@NotNull TitanVertex v);
+    R format(@NotNull T v);
 
 }

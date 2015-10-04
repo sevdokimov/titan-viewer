@@ -2,6 +2,7 @@ package com.behavox.titanView.viewModel;
 
 import com.behavox.titanView.ConfigManager;
 import com.behavox.titanView.json.ShortVertexJson;
+import com.google.common.html.HtmlEscapers;
 import com.thinkaurelius.titan.core.TitanVertex;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,9 +13,9 @@ import java.util.List;
 /**
  *
  */
-public class DefaultFormatter implements NodeFormatter {
+public class DefaultVertexFormatter implements ElementFormatter<TitanVertex, ShortVertexJson> {
 
-    public static final NodeFormatter INSTANCE = new DefaultFormatter();
+    public static final ElementFormatter INSTANCE = new DefaultVertexFormatter();
 
     @NotNull
     @Override
@@ -28,6 +29,6 @@ public class DefaultFormatter implements NodeFormatter {
             map.put(propertyName, v.getProperty(propertyName));
         }
 
-        return new ShortVertexJson(v.getLongId(), null, map.toString());
+        return new ShortVertexJson(v.getLongId(), null, HtmlEscapers.htmlEscaper().escape(map.toString()));
     }
 }

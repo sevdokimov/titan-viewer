@@ -4,6 +4,7 @@ import com.behavox.titanView.GraphManager;
 import com.behavox.titanView.Utils;
 import com.behavox.titanView.json.FullVertexJson;
 import com.behavox.titanView.json.ObjectJson;
+import com.behavox.titanView.json.HalfEdgeJson;
 import com.behavox.titanView.json.ShortEdgeJson;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -196,6 +197,10 @@ public class DataServlet extends AbstractServlet {
         return Utils.getEdgeLabels(g);
     }
 
+    public String openGraph(TitanGraph g, HttpServletRequest req) {
+        return "true";
+    }
+
     public Map<String, EdgeListResult> vertexEdgesAllLabels(TitanGraph g, HttpServletRequest req) {
         long id = getLongParam("vId");
 
@@ -222,7 +227,7 @@ public class DataServlet extends AbstractServlet {
                     break;
                 }
 
-                ShortEdgeJson edgeJson = new ShortEdgeJson(vertex, (TitanEdge) edge);
+                HalfEdgeJson edgeJson = new HalfEdgeJson(vertex, (TitanEdge) edge);
 
                 edgeList.edges.add(edgeJson);
             }
@@ -268,6 +273,9 @@ public class DataServlet extends AbstractServlet {
             else if (o instanceof TitanVertex) {
                 elements.add(Utils.format((TitanVertex) o));
             }
+            else if (o instanceof TitanEdge) {
+                elements.add(new ShortEdgeJson((TitanEdge) o));
+            }
             else {
                 elements.add(new ObjectJson(o));
             }
@@ -275,7 +283,7 @@ public class DataServlet extends AbstractServlet {
     }
 
     private static class EdgeListResult {
-        public final List<ShortEdgeJson> edges = new ArrayList<>();
+        public final List<HalfEdgeJson> edges = new ArrayList<>();
 
         public boolean hasNext;
     }

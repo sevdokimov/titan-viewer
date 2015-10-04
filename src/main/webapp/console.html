@@ -78,10 +78,45 @@
                                     </div>
                                 </div>
 
+                                <table ng-switch-when="E" class="edgeTable">
+                                    <tr>
+                                        <td>
+                                            <div class="vertex {{e.outV.e.cls}}" vId="{{e.outV.id}}">
+                                                <a ng-href="#/g/{{table}}/vertex/{{e.outV.id}}" class="vId">{{e.outV.id}}</a>
+                                                <span class="vIcon"></span>
+                                                <span ng-bind-html="e.outV.body"></span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            --->
+                                        </td>
+                                        <td class="edgeCell">
+                                            <div class="edgeHead">
+                                                <span class="edgeId" title="{{e.fullId}}">#{{e.id}}</span> <b>{{e.label}}</b>
+                                            </div>
+                                            <span ng-bind-html="e.body"></span>
+                                        </td>
+                                        <td>
+                                            --->
+                                        </td>
+                                        <td>
+                                            <div class="vertex {{e.inV.e.cls}}" vId="{{e.inV.id}}">
+                                                <a ng-href="#/g/{{table}}/vertex/{{e.inV.id}}" class="vId">{{e.inV.id}}</a>
+                                                <span class="vIcon"></span>
+                                                <span ng-bind-html="e.inV.body"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+
                                 <div ng-switch-default class="jsonObject">
                                     {{stringify(e)}}
                                 </div>
                             </div>
+                        </div>
+
+                        <div ng-if="res.hasNext" title="Has more elements">
+                            <strong>...</strong>
                         </div>
                     </div>
                 </div>

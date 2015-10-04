@@ -23,6 +23,11 @@ titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams, $w
             window.location = "/remoteError.html"
         })
     }
+    else {
+        $http.get("/data/openGraph", {params: {table: $routeParams.table}}).then(function (response) {
+
+        })
+    }
 
     $scope.executeQuery = function() {
         var editor = $window.editor

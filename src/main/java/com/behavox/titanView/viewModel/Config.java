@@ -1,6 +1,8 @@
 package com.behavox.titanView.viewModel;
 
+import com.thinkaurelius.titan.core.TitanElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Function;
@@ -12,14 +14,20 @@ public class Config {
 
     private Comparator<String> propComparator = (o1, o2) -> 0;
 
-    private final List<NodeType> nodeTypes = new ArrayList<>();
+    private final List<ElementType> elementTypes = new ArrayList<>();
 
-    public List<NodeType> getNodeTypes() {
-        return nodeTypes;
+    @Nullable
+    public <T extends TitanElement, R> ElementType<T, R> findType(T element) {
+        for (ElementType type : elementTypes) {
+            if (type.getPredicate().test(element))
+                return type;
+        }
+
+        return null;
     }
 
-    public void addNodeType(@NotNull NodeType nodeType) {
-        nodeTypes.add(nodeType);
+    public void addType(@NotNull ElementType type) {
+        elementTypes.add(type);
     }
 
     public Comparator<String> getPropComparator() {
