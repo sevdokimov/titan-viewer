@@ -1,18 +1,35 @@
-titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams) {
+titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams, $window) {
     $scope.table = $routeParams.table
 
-    $scope.loading = true
-    $scope.currentQuery = 'g.V'
+    if (!$scope.table || $scope.table.length == 0) throw "Empty table name"
 
-    $http.get("/data/vertexList", {params: {table: $routeParams.table}}).then(function (response) {
-        $scope.res = response.data
-        $scope.loading = false
-    }, function(response) {
-        window.location = "/remoteError.html"
-    })
+    var savedScript = $window.localStorage['gremlinScript_' + $scope.table]
+
+    if (!savedScript) {
+        savedScript = 'g.V'
+    }
+
+    $window.editor.setValue(savedScript)
+    $window.editor.selection.clearSelection()
+
+    if (savedScript == 'g.V') {
+        $scope.loading = true
+        $scope.currentQuery = 'g.V'
+
+        $http.get("/data/vertexList", {params: {table: $routeParams.table}}).then(function (response) {
+            $scope.res = response.data
+            $scope.loading = false
+        }, function(response) {
+            window.location = "/remoteError.html"
+        })
+    }
 
     $scope.executeQuery = function() {
-        var query = $('#queryEditor')[0].editorInstance.getValue().trim()
+        var editor = $window.editor
+
+        if (!editor) return
+
+        var query = editor.getValue().trim()
 
         if (query == "" || $scope.loading) {
             return
@@ -49,4 +66,12 @@ titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams) {
     $scope.stringify = function(o) {
         return JSON.stringify(o)
     }
+
+    $window.addEventListener('beforeunload', function() {
+        var editor = $window.editor
+
+        if (editor) {
+            $window.localStorage['gremlinScript_' + $scope.table] = editor.getValue()
+        }
+    });
 });
