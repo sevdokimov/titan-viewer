@@ -13,10 +13,7 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -25,49 +22,82 @@ import java.util.stream.Stream;
 
 public class GraphManager {
 
+    private static final int CONNECTION_KEEP_TIME = 5 * 60 * 1000;
+
     private static final String DB_HOST = "127.0.0.1";
 
     private static final ImmutableSet<String> SHORT_TITAN_COLUMNS = ImmutableSet.of("e", "f", "g", "h", "i", "l", "m", "s", "t");
     private static final ImmutableSet<String> LONG_TITAN_COLUMNS = ImmutableSet.of("edgestore", "edgestore_lock_", "graphindex", "graphindex_lock_",
             "system_properties", "system_properties_lock_", "systemlog", "titan_ids", "txlog");
 
-    private static final GraphManager instance = new GraphManager();
-
-    private final Map<String, CompletableFuture<TitanGraph>> graphMap = new ConcurrentHashMap<>();
+    private final Map<String, ConnectionHolder> graphMap = new ConcurrentHashMap<>();
 
     private HBaseAdmin admin;
+
+    private static final Timer TIMER = new Timer("Graph connection killer");
+
+    private static final GraphManager instance = new GraphManager();
+
+    public GraphManager() {
+        TIMER.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                long threshold = System.currentTimeMillis() - CONNECTION_KEEP_TIME;
+
+                for (Map.Entry<String, ConnectionHolder> entry : graphMap.entrySet()) {
+                    if (entry.getValue().lastAccess < threshold && entry.getValue().future.isDone()) {
+                        if (graphMap.remove(entry.getKey(), entry.getValue())) {
+                            TitanGraph graph = entry.getValue().future.getNow(null);
+
+                            if (graph != null) {
+                                graph.shutdown();
+                            }
+                        }
+                    }
+                }
+            }
+        }, 5000, 5000);
+    }
+
+    public boolean isGraphOpen(@NotNull String tableName) {
+        return graphMap.containsKey(tableName);
+    }
 
     @NotNull
     public TitanGraph getGraph(@NotNull String tableName) {
         while (true) {
-            CompletableFuture<TitanGraph> future = graphMap.get(tableName);
+            ConnectionHolder holder = graphMap.get(tableName);
 
-            if (future == null) {
-                future = new CompletableFuture<>();
+            if (holder == null) {
+                holder = new ConnectionHolder();
 
-                CompletableFuture<TitanGraph> old = graphMap.putIfAbsent(tableName, future);
+                ConnectionHolder old = graphMap.putIfAbsent(tableName, holder);
 
                 if (old == null) {
                     try {
                         TitanGraph titanGraph = TitanFactory.build().set("storage.backend", "hbase").set("storage.hbase.table", tableName).open();
 
-                        future.complete(titanGraph);
+                        holder.lastAccess = System.currentTimeMillis();
+
+                        holder.future.complete(titanGraph);
 
                         return titanGraph;
                     } catch (Throwable t) {
-                        future.completeExceptionally(t);
+                        holder.future.completeExceptionally(t);
 
                         throw t;
                     }
                 }
 
-                future = old;
+                holder = old;
             }
 
             TitanGraph res;
 
             try {
-                res = future.get();
+                res = holder.future.get();
+
+                holder.lastAccess = System.currentTimeMillis();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new IllegalStateException();
@@ -79,7 +109,7 @@ public class GraphManager {
                 return res;
             }
 
-            graphMap.remove(tableName, future);
+            graphMap.remove(tableName, holder);
         }
     }
 
@@ -131,5 +161,11 @@ public class GraphManager {
         }
 
         return res;
+    }
+
+    private static class ConnectionHolder {
+        private final CompletableFuture<TitanGraph> future = new CompletableFuture<>();
+
+        private volatile long lastAccess;
     }
 }

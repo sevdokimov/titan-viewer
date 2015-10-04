@@ -13,7 +13,15 @@
 
             <div ng-if="tableList && tableList.length > 0">
                 <div ng-repeat="table in tableList" style="padding: 3px">
-                    <a ng-href="#/g/{{table}}/vertexList">{{table}}</a>
+                    <span ng-if="table.isOpen" style="color: green"
+                          class="glyphicon glyphicon-transfer"
+                          title="Graph is open"
+                    ></span>
+                    <span ng-if="!table.isOpen"
+                          class="glyphicon glyphicon-th"
+                          title="Graph is closed"
+                    ></span>
+                    <a ng-href="#/g/{{table.name}}/vertexList">{{table.name}}</a>
                 </div>
             </div>
         </div>

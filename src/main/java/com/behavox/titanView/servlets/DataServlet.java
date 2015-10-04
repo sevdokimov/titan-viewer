@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -184,8 +185,10 @@ public class DataServlet extends AbstractServlet {
         return res;
     }
 
-    public List<String> tableList(HttpServletRequest req) throws IOException {
-        return GraphManager.getInstance().loadTables();
+    public List<TitanTableDescr> tableList(HttpServletRequest req) throws IOException {
+        GraphManager gm = GraphManager.getInstance();
+        return gm.loadTables().stream().map(tableName -> new TitanTableDescr(tableName, gm.isGraphOpen(tableName)))
+                .collect(Collectors.toList());
     }
 
     private static class VertexListResult {
@@ -198,5 +201,15 @@ public class DataServlet extends AbstractServlet {
         public final List<ShortEdgeJson> edges = new ArrayList<>();
 
         public boolean hasNext;
+    }
+
+    private static class TitanTableDescr {
+        private final String name;
+        private final boolean isOpen;
+
+        public TitanTableDescr(String name, boolean isOpen) {
+            this.name = name;
+            this.isOpen = isOpen;
+        }
     }
 }
