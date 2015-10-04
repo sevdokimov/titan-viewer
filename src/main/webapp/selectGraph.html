@@ -2,17 +2,12 @@
     <div class="row">
         <h3>List of graph in the HBase</h3>
 
-        <div style="color: red" ng-if="errorMsg">
-            {{errorMsg}}
+        <div ng-if="!tableList">
+            Loading...
         </div>
 
-        <div ng-if="!errorMsg">
-            <div ng-if="!tableList">
-                Loading...
-            </div>
-
-            <div ng-if="tableList && tableList.length > 0">
-                <div ng-repeat="table in tableList" style="padding: 3px">
+        <div ng-if="tableList && tableList.length > 0">
+            <div ng-repeat="table in tableList" style="padding: 3px">
                     <span ng-if="table.isOpen" style="color: green"
                           class="glyphicon glyphicon-transfer"
                           title="Graph is open"
@@ -21,8 +16,7 @@
                           class="glyphicon glyphicon-th"
                           title="Graph is closed"
                     ></span>
-                    <a ng-href="#/g/{{table.name}}/vertexList">{{table.name}}</a>
-                </div>
+                <a ng-href="#/g/{{table.name}}/vertexList">{{table.name}}</a>
             </div>
         </div>
     </div>
