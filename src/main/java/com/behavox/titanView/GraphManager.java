@@ -11,6 +11,8 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -22,7 +24,9 @@ import java.util.stream.Stream;
 
 public class GraphManager {
 
-    private static final long CONNECTION_KEEP_TIME = Long.parseLong(System.getProperty("keepConnection", String.valueOf(10 * 60 * 1000)));
+    private static final Logger log = LoggerFactory.getLogger(GraphManager.class);
+
+    private static final long CONNECTION_KEEP_TIME = Long.parseLong(System.getProperty("keepConnection", String.valueOf(7 * 60 * 1000)));
 
     private static final String DB_HOST = "127.0.0.1";
 
@@ -50,6 +54,8 @@ public class GraphManager {
                             TitanGraph graph = entry.getValue().future.getNow(null);
 
                             if (graph != null) {
+                                log.info("Disconnect from graph by timeout: {}", entry.getKey());
+
                                 graph.shutdown();
                             }
                         }
@@ -75,6 +81,8 @@ public class GraphManager {
 
                 if (old == null) {
                     try {
+                        log.info("Connection to the graph: {}", tableName);
+
                         TitanGraph titanGraph = TitanFactory.build().set("storage.backend", "hbase").set("storage.hbase.table", tableName).open();
 
                         holder.lastAccess = System.currentTimeMillis();
@@ -133,6 +141,8 @@ public class GraphManager {
 
     public synchronized HBaseAdmin getAdmin() throws IOException {
         if (admin == null) {
+            log.info("Creation HBase connector");
+
             Configuration hbaseCfg = HBaseConfiguration.create();
             hbaseCfg.setInt("timeout", 120000);
             hbaseCfg.set("hbase.master", "*" + DB_HOST + ":9000*");

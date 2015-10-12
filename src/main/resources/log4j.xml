@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <appender name="console" class="org.apache.log4j.Consoorg.apache.log4j.varia.NullAppenderleAppender">
+        <param name="Target" value="System.out"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %c - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="file" class="org.apache.log4j.RollingFileAppender">
+        <param name="file" value="titan-view.log"/>
+        <param name="MaxFileSize" value="10MB"/>
+        <!-- Keep one backup file -->
+        <param name="MaxBackupIndex" value="10"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %p %c - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="null" class="org.apache.log4j.varia.NullAppender" />
+
+    <logger name="org.apache.zookeeper.ClientCnxn">
+        <level value="info" />
+        <appender-ref ref="null"/>
+    </logger>
+    <logger name="org.apache.zookeeper.ClientCnxn">
+        <level value="warn" />
+        <appender-ref ref="file"/>
+    </logger>
+
+    <logger name="org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper">
+        <level value="info" />
+        <appender-ref ref="null"/>
+    </logger>
+    <logger name="org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper">
+        <level value="warn" />
+        <appender-ref ref="file"/>
+    </logger>
+
+    <logger name="org.apache.zookeeper.ZooKeeper">
+        <level value="info" />
+        <appender-ref ref="null"/>
+    </logger>
+    <logger name="org.apache.zookeeper.ZooKeeper">
+        <level value="warn" />
+        <appender-ref ref="file"/>
+    </logger>
+
+    <logger name="org.apache.hadoop.hbase.client.HConnectionManager$HConnectionImplementation">
+        <level value="info" />
+        <appender-ref ref="null"/>
+    </logger>
+    <logger name="org.apache.hadoop.hbase.client.HConnectionManager$HConnectionImplementation">
+        <level value="warn" />
+        <appender-ref ref="file"/>
+    </logger>
+
+
+    <!-- Root logger-->
+    <root>
+        <priority value="info" />
+        <appender-ref ref="file"/>
+    </root>
+
+</log4j:configuration>

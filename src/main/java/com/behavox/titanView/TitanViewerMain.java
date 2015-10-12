@@ -7,6 +7,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.log.StdErrLog;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
@@ -14,6 +16,8 @@ import java.util.Collections;
 import java.util.Properties;
 
 public class TitanViewerMain {
+
+    private static final Logger log = LoggerFactory.getLogger(TitanViewerMain.class);
 
     private static Server server;
 
@@ -83,6 +87,13 @@ public class TitanViewerMain {
     }
 
     public static void main(String[] args) throws Exception {
+        log.info("");
+        log.info("");
+        log.info("");
+        log.info("+-------------------------------------------------------+");
+        log.info("|              Starting application                     |");
+        log.info("+-------------------------------------------------------+");
+
         int port = Integer.parseInt(System.getProperty("port", "8060"));
 
         startup(port);

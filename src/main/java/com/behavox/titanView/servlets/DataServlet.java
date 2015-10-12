@@ -15,6 +15,8 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.gremlin.groovy.jsr223.GremlinGroovyScriptEngine;
 import com.tinkerpop.gremlin.java.GremlinPipeline;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.script.Bindings;
 import javax.script.CompiledScript;
@@ -33,6 +35,8 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings({"UnusedParameters", "unused"})
 public class DataServlet extends AbstractServlet {
+
+    private static final Logger log = LoggerFactory.getLogger(DataServlet.class);
 
     private static final Map<String, Method> methods = new HashMap<>();
 
@@ -110,6 +114,8 @@ public class DataServlet extends AbstractServlet {
             }
 
         } catch (Throwable t) {
+            log.error("Failed to handle data-request", t);
+
             if (graph != null) {
                 graph.rollback();
                 graph = null;
