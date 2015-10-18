@@ -1,18 +1,33 @@
+/**
+ * @param table {String}
+ * @return {QueryHistory}
+ */
+function loadHistory(table) {
+    return new QueryHistory(localStorage['gremlinScript_' + table])
+}
+
+/**
+ * @param table {String}
+ * @param history {QueryHistory}
+ */
+function saveHistory(table, history) {
+    localStorage['gremlinScript_' + table] = history.toString()
+}
+
 titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams, $window) {
     $scope.table = $routeParams.table
 
     if (!$scope.table || $scope.table.length == 0) throw "Empty table name"
 
-    var savedScript = $window.localStorage['gremlinScript_' + $scope.table]
+    $scope.history = loadHistory($scope.table)
+    $scope.historyPos = $scope.history.size()
 
-    if (!savedScript) {
-        savedScript = 'g.V'
-    }
+    var query = $scope.history.currentQuery;
 
-    $window.editor.setValue(savedScript)
+    $window.editor.setValue(query)
     $window.editor.selection.clearSelection()
 
-    if (savedScript == 'g.V') {
+    if (query == 'g.V') {
         $scope.loading = true
         $scope.currentQuery = 'g.V'
 
@@ -39,6 +54,9 @@ titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams, $w
         if (query == "" || $scope.loading) {
             return
         }
+
+        $scope.history.addQuery(query)
+        $scope.historyPos = $scope.history.size()
 
         $scope.currentQuery = query
         $scope.loading = true
@@ -76,7 +94,63 @@ titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams, $w
         var editor = $window.editor
 
         if (editor) {
-            $window.localStorage['gremlinScript_' + $scope.table] = editor.getValue()
+            $scope.history.currentQuery = editor.getValue()
+
+            var oldHistory = loadHistory($scope.table)
+
+            $scope.history.mergeHistory(oldHistory)
+            $scope.history.trimHistory(30)
+            saveHistory($scope.table, $scope.history)
         }
     });
+
+    $scope.prevQuery = function() {
+        if ($scope.historyPos == 0)
+            return
+
+        var editor = $window.editor
+        var q = editor.getValue()
+
+        if ($scope.historyPos < $scope.history.size()) {
+            if (q != $scope.history.list[$scope.historyPos]) {
+                $scope.history.currentQuery = q;
+            }
+
+            $scope.historyPos--
+        }
+        else {
+            $scope.history.currentQuery = q;
+
+            $scope.historyPos = $scope.history.size() - 1
+        }
+
+        editor.setValue($scope.history.list[$scope.historyPos])
+        editor.selection.clearSelection()
+    }
+
+    $scope.nextQuery = function() {
+        if ($scope.historyPos >= $scope.history.size())
+            return
+
+        var editor = $window.editor
+
+        var q = editor.getValue()
+
+        if (q != $scope.history.list[$scope.historyPos]) {
+            $scope.history.currentQuery = q;
+        }
+
+        if ($scope.historyPos == $scope.history.size() - 1) {
+            $scope.historyPos = $scope.history.size()
+
+            editor.setValue($scope.history.currentQuery)
+            editor.selection.clearSelection()
+        }
+        else {
+            $scope.historyPos++
+
+            editor.setValue($scope.history.list[$scope.historyPos])
+            editor.selection.clearSelection()
+        }
+    }
 });

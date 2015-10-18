@@ -2,7 +2,24 @@
     <div class="row">
         <h2>Gremlin console</h2>
 
-        <div id="queryEditor" onkeydown="editorKeyPressed(event)"></div>
+        <table cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+                <td>
+                    <div id="queryEditor" onkeydown="editorKeyPressed(event)"></div>
+                </td>
+                <td width="1%" valign="top" style="padding: 3px">
+                    <span id="histPrev"
+                          ng-class="{'glyphicon': true, 'glyphicon-arrow-up': true, histAction: true, 'histActionActive': historyPos > 0}"
+                          ng-click="prevQuery()"
+                          title="Previous query (Ctrl+Up)"></span>
+
+                    <span id="histNext"
+                          ng-class="{'glyphicon': true, 'glyphicon-arrow-down': true, histAction: true, 'histActionActive': historyPos < history.size()}"
+                          ng-click="nextQuery()"
+                          title="Next query (Ctrl+Down)"></span>
+                </td>
+            </tr>
+        </table>
 
         <div id="consoleControls">
             <button id="executeBtn" ng-click="executeQuery()" class="btn btn-primary"
@@ -22,9 +39,27 @@
             })
             editor.getSession().setMode("ace/mode/groovy");
 
+            editor.commands.bindKeys({"ctrl-up":null, "ctrl-down":null})
+
             function editorKeyPressed(evt) {
-                if (evt.keyCode == 13 && evt.ctrlKey) {
-                    $('#executeBtn').click()
+                switch (evt.keyCode) {
+                    case 13:
+                        if (evt.ctrlKey) {
+                            $('#executeBtn').click()
+                        }
+                        break
+
+                    case 38:
+                        if (evt.ctrlKey) {
+                            $('#histPrev').click()
+                        }
+                        break
+
+                    case 40:
+                        if (evt.ctrlKey) {
+                            $('#histNext').click()
+                        }
+                        break
                 }
             }
         </script>

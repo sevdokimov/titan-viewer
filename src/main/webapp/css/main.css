@@ -82,3 +82,12 @@ body {
     color: #f00;
     white-space: pre;
 }
+
+.histAction {
+    color: #aaa;
+}
+
+.histActionActive {
+    color: #0000aa;
+    cursor: pointer;
+}
