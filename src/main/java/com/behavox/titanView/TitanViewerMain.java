@@ -83,7 +83,7 @@ public class TitanViewerMain {
     }
 
     public static void main(String[] args) throws Exception {
-        int port = Integer.parseInt(System.getProperty("port", "45700"));
+        int port = Integer.parseInt(System.getProperty("port", "8060"));
 
         startup(port);
 
