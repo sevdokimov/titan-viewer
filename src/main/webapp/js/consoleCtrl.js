@@ -122,6 +122,10 @@ titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams, $w
             $scope.history.currentQuery = q;
 
             $scope.historyPos = $scope.history.size() - 1
+
+            if ($scope.historyPos > 0 && $scope.history.list[$scope.historyPos] == q) {
+                $scope.historyPos--
+            }
         }
 
         editor.setValue($scope.history.list[$scope.historyPos])
