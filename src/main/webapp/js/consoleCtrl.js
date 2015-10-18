@@ -157,4 +157,42 @@ titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams, $w
             editor.selection.clearSelection()
         }
     }
+
+    $scope.showHistory = function() {
+        var hTable = $('#historyTable').empty()
+
+        var list = $scope.history.list;
+
+        if (list.length == 0) {
+            hTable.append("History is empty")
+        }
+        else {
+            for (var i = list.length - 1; i >= 0; i--) {
+                var query = list[i]
+
+                var a = $('<a href="#">select</a>')
+                a.click(function() {
+                    var selectedQuery = $('.query', $(this).parent()).text()
+
+                    $('#historyDialog').modal('hide')
+
+                    var editor = $window.editor
+
+                    editor.setValue(selectedQuery)
+                    editor.selection.clearSelection()
+
+                    $scope.historyPos = $scope.history.size()
+
+                    return false
+                })
+
+                var line = $("<div class='historyLine'></div>");
+                line.append(a).append(' ').append($("<span class='query'></span>").text(query))
+
+                hTable.append(line)
+            }
+        }
+
+        $('#historyDialog').modal()
+    }
 });

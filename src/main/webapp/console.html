@@ -7,16 +7,27 @@
                 <td>
                     <div id="queryEditor" onkeydown="editorKeyPressed(event)"></div>
                 </td>
-                <td width="1%" valign="top" style="padding: 3px">
-                    <span id="histPrev"
-                          ng-class="{'glyphicon': true, 'glyphicon-arrow-up': true, histAction: true, 'histActionActive': historyPos > 0}"
-                          ng-click="prevQuery()"
-                          title="Previous query (Ctrl+Up)"></span>
+                <td width="1%" valign="top" style="padding: 2px">
+                    <span ng-class="{toolicon: true, histAction:true, tooliconDisabled: historyPos == 0}">
+                        <span id="histPrev" class="glyphicon glyphicon-arrow-up"
+                              ng-click="prevQuery()"
+                              title="Previous query (Ctrl+Up)"></span>
+                    </span>
 
-                    <span id="histNext"
-                          ng-class="{'glyphicon': true, 'glyphicon-arrow-down': true, histAction: true, 'histActionActive': historyPos < history.size()}"
-                          ng-click="nextQuery()"
-                          title="Next query (Ctrl+Down)"></span>
+                    <span class="toolicon">
+                        <span id="showHistory"
+                              ng-click="showHistory()"
+                              class="glyphicon glyphicon-time"
+                              title="History (Ctrl+H)"></span>
+                    </span>
+
+                    <span ng-class="{toolicon: true, histAction:true, tooliconDisabled: historyPos >= history.size()}">
+                        <span id="histNext"
+                              class="glyphicon glyphicon-arrow-down"
+                              ng-click="nextQuery()"
+                              title="Next query (Ctrl+Down)"></span>
+                    </span>
+
                 </td>
             </tr>
         </table>
@@ -39,7 +50,7 @@
             })
             editor.getSession().setMode("ace/mode/groovy");
 
-            editor.commands.bindKeys({"ctrl-up":null, "ctrl-down":null})
+            editor.commands.bindKeys({"ctrl-up":null, "ctrl-down":null, "ctrl-h":null})
 
             function editorKeyPressed(evt) {
                 switch (evt.keyCode) {
@@ -58,6 +69,13 @@
                     case 40:
                         if (evt.ctrlKey) {
                             $('#histNext').click()
+                        }
+                        break
+
+                    case 72:
+                        if (evt.ctrlKey) {
+                            $('#showHistory').click()
+                            evt.preventDefault()
                         }
                         break
                 }
@@ -154,6 +172,24 @@
                             <strong>...</strong>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="historyDialog" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">History</h4>
+            </div>
+            <div class="modal-body">
+                <div id="historyTable">
+
                 </div>
             </div>
         </div>

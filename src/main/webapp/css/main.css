@@ -83,11 +83,21 @@ body {
     white-space: pre;
 }
 
-.histAction {
-    color: #aaa;
+.toolicon {
+    display: inline-block;
+    cursor: pointer;
+    padding: 2px;
 }
 
-.histActionActive {
+.tooliconDisabled {
+    cursor: auto;
+    color: #aaa !important;
+}
+
+.histAction {
     color: #0000aa;
-    cursor: pointer;
+}
+
+.historyLine {
+    padding: 5px 0;
 }
