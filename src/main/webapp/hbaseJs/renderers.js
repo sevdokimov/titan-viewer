@@ -10,7 +10,7 @@ function Renderer(name, f) {
 
 /**
  * @param m {string}
- * @param attr {object}
+ * @param attr {RendererAttr}
  * @return {string}
  */
 Renderer.prototype.render = function(m, attr) {
@@ -18,7 +18,7 @@ Renderer.prototype.render = function(m, attr) {
         return '<span class="dNull">null</span>'
 
     if (!attr)
-        attr = {}
+        attr = new RendererAttr()
 
     var res = this.f(m, attr)
 
@@ -29,12 +29,23 @@ Renderer.prototype.render = function(m, attr) {
     return res
 }
 
-function hexFormatter(m) {
+/**
+ * @param m {string}
+ * @param attr {RendererAttr}
+ * @return {string}
+ */
+function hexFormatter(m, attr) {
     var trimmed = false
 
-    if (m.length > 30) {
-        m = m.substr(0, 28)
-        trimmed = true
+    var maxLength = attr.maxlength
+    if (!maxLength)
+        maxLength = 30
+
+    if (maxLength > 0) {
+        if (m.length > maxLength * 2) {
+            m = m.substr(0, maxLength * 2)
+            trimmed = true
+        }
     }
 
     var res = []
@@ -53,21 +64,27 @@ function hexFormatter(m) {
 
 var hexRenderer = new Renderer("hex", hexFormatter)
 
-var stringRenderer = new Renderer("string", function(m) {
+var stringRenderer = new Renderer("string", function(m, attr) {
     var res = []
 
     var trimmed = false
+
+    var maxLength = attr.maxlength
+    if (!maxLength)
+        maxLength = 30
+
+    if (maxLength > 0) {
+        if (m.length > maxLength * 2) {
+            m = m.substr(0, maxLength * 2)
+            trimmed = true
+        }
+    }
 
     res.push("<span class='dStr'>")
 
     for (var i = 0; i < m.length; i += 2) {
         var x = parseInt(m.substr(i, 2), 16)
         res.push(String.fromCharCode(x))
-
-        if (res.length > 30) {
-            trimmed = true
-            break
-        }
     }
 
     res.push("</span>")
@@ -93,6 +110,15 @@ var boolRenderer = new Renderer("boolean", function(m) {
 
 var intRenderer = new Renderer("int", function(m) {
     if (m.length != 4 * 2)
+        return null;
+
+    var x = parseInt(m, 16)
+
+    return '<span class="dInt">' + x + '</span>'
+})
+
+var longRenderer = new Renderer("long", function(m) {
+    if (m.length != 8 * 2)
         return null;
 
     var x = parseInt(m, 16)
@@ -188,7 +214,7 @@ var dateRenderer = new Renderer("date", function(m) {
 //    return '<span class="dDate">' + str + '</span>'
 //})
 
-var allRenderers = [hexRenderer, stringRenderer, boolRenderer, intRenderer, dateRenderer,
+var allRenderers = [hexRenderer, stringRenderer, boolRenderer, intRenderer, longRenderer, dateRenderer,
     floatRenderer, doubleRenderer]
 
 var renderersMap = {}
@@ -201,3 +227,14 @@ function initRenderers() {
 
 initRenderers()
 
+/**
+ * @constructor
+ */
+function RendererAttr() {
+
+}
+
+/**
+ * @type {number}
+ */
+RendererAttr.prototype.maxLength = 30

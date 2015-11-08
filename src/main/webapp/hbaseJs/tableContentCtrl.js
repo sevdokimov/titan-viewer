@@ -9,7 +9,7 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         $scope.simpleTableName = table.substring(idx + 1)
     }
 
-    $scope.keyFormat = {renderer: hexRenderer, rendererAttr: {}}
+    $scope.keyFormat = {renderer: hexRenderer, rendererAttr: {maxLength: 40}}
 
     $scope.startKey = null
 
