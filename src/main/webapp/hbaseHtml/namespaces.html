@@ -1,0 +1,16 @@
+<div class="container">
+    <div class="row">
+        <h3>Namespaces</h3>
+
+        <div ng-if="!nsList">
+            <img src="../img/progress.gif"> Loading...
+        </div>
+
+        <div ng-if="nsList">
+            <div ng-repeat="ns in nsList" style="padding: 3px">
+                <a ng-href="#/n/{{ns}}">{{ns}}</a>
+            </div>
+        </div>
+    </div>
+
+</div>

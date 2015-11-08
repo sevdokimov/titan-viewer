@@ -1,0 +1,93 @@
+body {
+    padding: 5px;
+}
+
+.dNull {
+    color: #999;
+    font-size: 14px;
+}
+
+.dHex {
+    /*color: saddlebrown;*/
+    font-size: 10px;
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.dStr {
+    color: #080;
+    font-size: 12px;
+    word-break: break-all;
+}
+
+.dBool {
+    color: #008;
+    font-size: 14px;
+}
+
+.dInt {
+    color: #00f;
+    font-size: 14px;
+}
+
+.dFloat {
+    color: #00f;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.dDate {
+    color: #00b;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.renderError {
+    color: red;
+}
+
+#dataTable {
+    width: auto !important;
+}
+
+#dataTable td {
+    text-align: right;
+}
+
+#dataTable td.key {
+    white-space: nowrap;
+}
+
+#dataTable .columnHeader th {
+    padding: 3px;
+}
+
+#dataTable .columnHeader th div {
+    padding: 1px;
+    cursor: pointer;
+}
+
+#dataTable .columnHeader th div:hover {
+    background: #eaeaea;
+}
+
+#dataTable th.keyHeader span {
+    padding: 1px;
+    cursor: pointer;
+}
+
+#dataTable th.keyHeader span:hover {
+    background: #eaeaea;
+}
+
+#dataTable td {
+    padding: 3px
+}
+
+.emptyResult {
+    color: #999;
+    font-style: italic;
+    font-size: 20px;
+
+    padding: 30px 40px;
+}

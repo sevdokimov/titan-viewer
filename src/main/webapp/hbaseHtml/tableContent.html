@@ -1,0 +1,87 @@
+<div class="container-fluid">
+    <div class="row">
+        <h3>
+            Table
+            <span ng-if="namespace">
+                <a ng-href="#/n/{{namespace}}">{{namespace}}</a>:{{simpleTableName}}
+            </span>
+            <span ng-if="!namespace">
+                {{table}}
+            </span>
+        </h3>
+    </div>
+
+    <div class="row">
+        <div ng-if="!data">
+            <img src="../img/progress.gif"> Loading...
+        </div>
+
+        <div ng-if="data && data.length == 0">
+            <div class="emptyResult">No rows found</div>
+        </div>
+
+        <div ng-if="data && data.length > 0">
+            <table id="dataTable" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th rowspan="2" class="keyHeader">
+                        <span ng-click="showSelectIdTypeDialog()">
+                            Key
+                        </span>
+                    </th>
+
+                    <th ng-repeat="f in families | filter: nonEmptyFamily" colspan="{{f.columns.length}}" title="Family">
+                        {{f.name}}
+                    </th>
+                </tr>
+                <tr class="columnHeader">
+                    <th ng-repeat="c in columns" title="{{c.family.name}}:{{c.q}}">
+                        <div ng-click="showSelectTypeDialog(c)">
+                            {{c.q}}
+                        </div>
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr ng-repeat="row in data track by $index">
+                    <td class="key" ng-bind-html="keyFormat.renderer.render(row.key, keyFormat.rendererAttr)"></td>
+
+                    <td ng-repeat="c in columns" ng-bind-html="c.renderer.render(row.data[c.family.name][c.q])"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <button ng-if="nextRowKey" ng-click="loadNext()">Next 30 rows</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="selectTypeDialog.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Column {{col.family.name}}:{{col.q}}</strons></h3>
+    </div>
+    <div class="modal-body">
+        Renderer:
+        <select ng-model="rendererName" ng-options="r.name as r.name for r in allRenderers"></select>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="selectIdTypeDialog.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Row key</strons></h3>
+    </div>
+    <div class="modal-body">
+        Renderer:
+        <select ng-model="rendererName" ng-options="r.name as r.name for r in allRenderers"></select>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+

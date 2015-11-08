@@ -12,6 +12,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>hbaseDataServlet</servlet-name>
+        <servlet-class>com.behavox.titanView.servlets.HBaseDataServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>hbaseDataServlet</servlet-name>
+        <url-pattern>/hbasedata/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>cfgReloader</servlet-name>
         <servlet-class>com.behavox.titanView.servlets.ConfigReloaderServlet</servlet-class>
     </servlet>

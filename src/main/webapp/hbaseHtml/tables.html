@@ -1,0 +1,16 @@
+<div class="container">
+    <div class="row">
+        <h3>Tables in {{ns}}</h3>
+
+        <div ng-if="!tableList">
+            <img src="../img/progress.gif"> Loading...
+        </div>
+
+        <div ng-if="tableList">
+            <div ng-repeat="t in tableList" style="padding: 3px">
+                <a ng-href="#/t/{{t.fullName}}">{{t.q}}</a>
+            </div>
+        </div>
+    </div>
+
+</div>
