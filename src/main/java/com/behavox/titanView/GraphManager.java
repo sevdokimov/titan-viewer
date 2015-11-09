@@ -139,22 +139,6 @@ public class GraphManager {
         return false;
     }
 
-    public synchronized HBaseAdmin getAdmin() throws IOException {
-        if (admin == null) {
-            log.info("Creation HBase connector");
-
-            Configuration hbaseCfg = HBaseConfiguration.create();
-            hbaseCfg.setInt("timeout", 120000);
-            hbaseCfg.set("hbase.master", "*" + DB_HOST + ":9000*");
-            hbaseCfg.set("hbase.zookeeper.quorum", DB_HOST);
-            hbaseCfg.set("hbase.zookeeper.property.clientPort", "2181");
-
-            admin = new HBaseAdmin(hbaseCfg);
-        }
-
-        return admin;
-    }
-
     public String getHost() {
         return DB_HOST;
     }
@@ -162,7 +146,7 @@ public class GraphManager {
     public List<String> loadTables() throws IOException {
         List<String> res = new ArrayList<>();
 
-        HBaseAdmin admin = getAdmin();
+        HBaseAdmin admin = HBaseManager.getInstance().getAdmin();
 
         for (TableName tableName : admin.listTableNames()) {
             if (isTitanTable(admin.getTableDescriptor(tableName))) {

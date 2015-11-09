@@ -1,6 +1,7 @@
 package com.behavox.titanView.servlets;
 
 import com.behavox.titanView.GraphManager;
+import com.behavox.titanView.HBaseManager;
 import com.behavox.titanView.Utils;
 import com.behavox.titanView.json.FullVertexJson;
 import com.behavox.titanView.json.ObjectJson;
@@ -15,6 +16,9 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.gremlin.groovy.jsr223.GremlinGroovyScriptEngine;
 import com.tinkerpop.gremlin.java.GremlinPipeline;
+import org.apache.hadoop.hbase.NamespaceDescriptor;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -245,10 +249,30 @@ public class DataServlet extends AbstractServlet {
         return res;
     }
 
-    public List<TitanTableDescr> tableList(HttpServletRequest req) throws IOException {
+    public Tables tableList(HttpServletRequest req) throws IOException {
         GraphManager gm = GraphManager.getInstance();
-        return gm.loadTables().stream().map(tableName -> new TitanTableDescr(tableName, gm.isGraphOpen(tableName)))
-                .collect(Collectors.toList());
+
+        Tables res = new Tables();
+
+        gm.loadTables().stream().map(tableName -> new TitanTableDescr(tableName, gm.isGraphOpen(tableName))).forEach(res.titanTables::add);
+
+        HBaseAdmin admin = HBaseManager.getInstance().getAdmin();
+
+        for (NamespaceDescriptor descriptor : admin.listNamespaceDescriptors()) {
+            String namespace = descriptor.getName();
+
+            List<String> tables = new ArrayList<>();
+
+            for (TableName tableName : admin.listTableNamesByNamespace(namespace)) {
+                tables.add(tableName.getNameAsString());
+            }
+
+            tables.sort(null);
+
+            res.hbaseTables.put(namespace, tables);
+        }
+
+        return res;
     }
 
     private static class QueryResult {
@@ -302,5 +326,11 @@ public class DataServlet extends AbstractServlet {
             this.name = name;
             this.isOpen = isOpen;
         }
+    }
+
+    private static class Tables {
+        private List<TitanTableDescr> titanTables = new ArrayList<>();
+
+        private Map<String, List<String>> hbaseTables = new HashMap<>();
     }
 }

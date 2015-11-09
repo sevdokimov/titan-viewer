@@ -25,7 +25,9 @@ titanViewApp.controller('vertexCtrl', function ($scope, $http, $routeParams) {
 
 titanViewApp.controller('selectGraphCtrl', function ($scope, $http, $location) {
     $http.get("/data/tableList").then(function (response) {
-        $scope.tableList = response.data
+        $scope.titanTables = response.data.titanTables
+
+        $scope.hbaseTables = response.data.hbaseTables
     }, function(response) {
         window.location = "/remoteError.html"
     })

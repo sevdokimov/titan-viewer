@@ -1,13 +1,13 @@
 <div class="container">
     <div class="row">
-        <h3>List of graph in the HBase</h3>
+        <h3>Titan graphs</h3>
 
-        <div ng-if="!tableList">
+        <div ng-if="!titanTables">
             <img src="img/progress.gif"> Loading...
         </div>
 
-        <div ng-if="tableList && tableList.length > 0">
-            <div ng-repeat="table in tableList" style="padding: 3px">
+        <div ng-if="titanTables">
+            <div ng-repeat="table in titanTables" style="padding: 3px">
                     <span ng-if="table.isOpen" style="color: green"
                           class="glyphicon glyphicon-transfer"
                           title="Connection established"
@@ -19,5 +19,31 @@
                 <a ng-href="#/g/{{table.name}}/console">{{table.name}}</a>
             </div>
         </div>
+
+        <h3>HBase tables</h3>
+
+        <div ng-if="!hbaseTables">
+            <img src="img/progress.gif"> Loading...
+        </div>
+
+        <div ng-if="hbaseTables" ng-init="opensNs=[]">
+            <div ng-repeat="(namespace, tables) in hbaseTables track by $index" style="padding: 3px">
+                <img src="img/right.png" style="cursor: pointer"
+                      ng-click="opensNs[$index] = true"
+                      ng-if="!opensNs[$index]"/>
+
+                <img src="img/down.png" style="cursor: pointer"
+                      ng-click="opensNs[$index] = false"
+                      ng-if="opensNs[$index]"/>
+                <a ng-href="hbase.html/#/n/{{namespace}}">{{namespace}}</a>
+
+                <div id="tables_{{$index}}" ng-show="opensNs[$index]" style="padding: 0 0 3px 30px">
+                    <div ng-repeat="t in tables" style="padding-bottom: 2px">
+                        <a ng-href="hbase.html/#/t/{{t}}">{{t}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
