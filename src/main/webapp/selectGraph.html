@@ -35,11 +35,11 @@
                 <img src="img/down.png" style="cursor: pointer"
                       ng-click="opensNs[$index] = false"
                       ng-if="opensNs[$index]"/>
-                <a ng-href="hbase.html/#/n/{{namespace}}">{{namespace}}</a>
+                <a ng-href="hbase.html#/n/{{namespace}}">{{namespace}}</a>
 
                 <div id="tables_{{$index}}" ng-show="opensNs[$index]" style="padding: 0 0 3px 30px">
                     <div ng-repeat="t in tables" style="padding-bottom: 2px">
-                        <a ng-href="hbase.html/#/t/{{t}}">{{t}}</a>
+                        <a ng-href="hbase.html#/t/{{t}}">{{t}}</a>
                     </div>
                 </div>
             </div>
