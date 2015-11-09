@@ -2,10 +2,12 @@
  * @constructor
  * @param name {string}
  * @param f {function}
+ * @param description {string}
  */
-function Renderer(name, f) {
+function Renderer(name, f, description) {
     this.name = name
     this.f = f
+    this.description = description ? description : name
 }
 
 /**
@@ -37,7 +39,7 @@ Renderer.prototype.render = function(m, attr) {
 function hexFormatter(m, attr) {
     var trimmed = false
 
-    var maxLength = attr.maxlength
+    var maxLength = attr.maxLength
     if (!maxLength)
         maxLength = 30
 
@@ -69,7 +71,7 @@ var stringRenderer = new Renderer("string", function(m, attr) {
 
     var trimmed = false
 
-    var maxLength = attr.maxlength
+    var maxLength = attr.maxLength
     if (!maxLength)
         maxLength = 30
 
@@ -143,6 +145,25 @@ var floatRenderer = new Renderer("float", function(m) {
     return '<span class="dFloat">' + res + '</span>'
 })
 
+var floatPRenderer = new Renderer("floatP", function(m) {
+    if (m.length != 4 * 2)
+        return null;
+
+    var x = parseInt(m, 16)
+
+    var buffer = new ArrayBuffer(4);
+    var intView = new Int32Array(buffer);
+    var floatView = new Float32Array(buffer);
+
+    x ^= 0x80000000
+
+    intView[0] = x
+
+    var res = floatView[0]
+
+    return '<span class="dFloat">' + res + '</span>'
+}, 'float (phoenix)')
+
 var doubleRenderer = new Renderer("double", function(m) {
     if (m.length != 8 * 2)
         return null;
@@ -161,6 +182,27 @@ var doubleRenderer = new Renderer("double", function(m) {
 
     return '<span class="dFloat">' + res + '</span>'
 })
+
+var doublePRenderer = new Renderer("doubleP", function(m) {
+    if (m.length != 8 * 2)
+        return null;
+
+    var x1 = parseInt(m.substr(0, 4 * 2), 16)
+    var x2 = parseInt(m.substr(4 * 2, 4 * 2), 16)
+
+    var buffer = new ArrayBuffer(8);
+    var intView = new Int32Array(buffer);
+    var floatView = new Float64Array(buffer);
+
+    x1 ^= 0x80000000
+
+    intView[1] = x1
+    intView[0] = x2
+
+    var res = floatView[0]
+
+    return '<span class="dFloat">' + res + '</span>'
+}, 'double (phoenix)')
 
 var dateRenderer = new Renderer("date", function(m) {
     if (m.length != 8 * 2)
@@ -215,7 +257,7 @@ var dateRenderer = new Renderer("date", function(m) {
 //})
 
 var allRenderers = [hexRenderer, stringRenderer, boolRenderer, intRenderer, longRenderer, dateRenderer,
-    floatRenderer, doubleRenderer]
+    floatRenderer, floatPRenderer, doubleRenderer, doublePRenderer]
 
 var renderersMap = {}
 
