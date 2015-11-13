@@ -120,7 +120,7 @@ var stringRenderer = new Renderer("string", function(m, attr) {
     return res.join('')
 }, null, ['maxLength', 'noWrap'])
 
-var boolRenderer = new Renderer("boolean", function(m) {
+var boolRenderer = new Renderer("boolean", function(m, attr) {
     if (m == '00') {
         return '<span class="dBool">true</span>'
     }
@@ -132,7 +132,7 @@ var boolRenderer = new Renderer("boolean", function(m) {
     }
 }, null, [])
 
-var intRenderer = new Renderer("int", function(m) {
+var intRenderer = new Renderer("int", function(m, attr) {
     if (m.length != 4 * 2)
         return null;
 
@@ -141,16 +141,39 @@ var intRenderer = new Renderer("int", function(m) {
     return '<span class="dInt">' + x + '</span>'
 }, null, [])
 
-var longRenderer = new Renderer("long", function(m) {
-    if (m.length != 8 * 2)
+var shortRenderer = new Renderer("short", function(m, attr) {
+    if (m.length != 2 * 2)
         return null;
 
     var x = parseInt(m, 16)
 
-    return '<span class="dInt">' + x + '</span>'
-}, null, [])
+    if (attr.phoenixSign) {
+        x = x ^ 0x8000
+    }
 
-var floatRenderer = new Renderer("float", function(m) {
+    return '<span class="dInt">' + x + '</span>'
+}, null, ['phoenixSign'])
+
+var longRenderer = new Renderer("long", function(m, attr) {
+    if (m.length != 8 * 2)
+        return null;
+
+    if (attr.phoenixSign) {
+        var x1 = parseInt(m.substr(0, 8), 16)
+        var x0 = parseInt(m.substr(8, 8), 16)
+
+        x1 = x1 ^ 0x80000000
+
+        var x = x1 * 0x100000000 + x0
+    }
+    else {
+        x = parseInt(m, 16)
+    }
+
+    return '<span class="dInt">' + x + '</span>'
+}, null, ['phoenixSign'])
+
+var floatRenderer = new Renderer("float", function(m, attr) {
     if (m.length != 4 * 2)
         return null;
 
@@ -160,6 +183,10 @@ var floatRenderer = new Renderer("float", function(m) {
     var intView = new Int32Array(buffer);
     var floatView = new Float32Array(buffer);
 
+    if (attr.phoenixSign) {
+        x = x ^ 0x80000000
+    }
+
     intView[0] = x
 
     var res = floatView[0]
@@ -167,7 +194,7 @@ var floatRenderer = new Renderer("float", function(m) {
     return '<span class="dFloat">' + res + '</span>'
 }, null, ['phoenixSign'])
 
-var doubleRenderer = new Renderer("double", function(m) {
+var doubleRenderer = new Renderer("double", function(m, attr) {
     if (m.length != 8 * 2)
         return null;
 
@@ -178,6 +205,10 @@ var doubleRenderer = new Renderer("double", function(m) {
     var intView = new Int32Array(buffer);
     var floatView = new Float64Array(buffer);
 
+    if (attr.phoenixSign) {
+        x1 = x1 ^ 0x80000000
+    }
+
     intView[1] = x1
     intView[0] = x2
 
@@ -186,11 +217,20 @@ var doubleRenderer = new Renderer("double", function(m) {
     return '<span class="dFloat">' + res + '</span>'
 }, null, ['phoenixSign'])
 
-var dateRenderer = new Renderer("date", function(m) {
+var dateRenderer = new Renderer("date", function(m, attr) {
     if (m.length != 8 * 2)
         return null;
 
-    var x = parseInt(m, 16)
+    if (!attr.phoenixSign) {
+        var x = parseInt(m, 16)
+    } else {
+        var x1 = parseInt(m.substr(0, 8), 16)
+        var x0 = parseInt(m.substr(8, 8), 16)
+
+        x1 = x1 ^ 0x80000000
+
+        x = x1 * 0x100000000 + x0
+    }
 
     var date = new Date(x);
 
@@ -211,35 +251,44 @@ var dateRenderer = new Renderer("date", function(m) {
     return '<span class="dDate">' + str + '</span>'
 }, null, ['phoenixSign'])
 
-//var timestampRenderer = new Renderer("timestamp", function(m) {
-//    if (m.length != 8 * 2 + 4 * 2)
-//        return null;
-//
-//    var x = parseInt(m.substr(0, 8 * 2 + 4*2), 16)
-//
-//    x = Math.floor(x/ 1000000)
-//
-//    var date = new Date(x);
-//
-//    var month = date.getMonth() + 1;
-//    var day = date.getDate();
-//    var hour = date.getHours();
-//    var min = date.getMinutes();
-//    var sec = date.getSeconds();
-//
-//    month = (month < 10 ? "0" : "") + month;
-//    day = (day < 10 ? "0" : "") + day;
-//    hour = (hour < 10 ? "0" : "") + hour;
-//    min = (min < 10 ? "0" : "") + min;
-//    sec = (sec < 10 ? "0" : "") + sec;
-//
-//    var str = date.getFullYear() + "-" + month + "-" + day + " " +  hour + ":" + min + ":" + sec;
-//
-//    return '<span class="dDate">' + str + '</span>'
-//})
+var timestampRenderer = new Renderer("timestamp", function(m, attr) {
+    if (m.length != 8 * 2 + 4 * 2)
+        return null;
 
-var allRenderers = [hexRenderer, stringRenderer, boolRenderer, intRenderer, longRenderer, dateRenderer,
-    floatRenderer, doubleRenderer]
+    if (!attr.phoenixSign) {
+        var x = parseInt(m, 16)
+    } else {
+        var x1 = parseInt(m.substr(0, 8), 16)
+        var x0 = parseInt(m.substr(8, 8), 16)
+
+        x1 = x1 ^ 0x80000000
+
+        x = x1 * 0x100000000 + x0
+    }
+
+    var date = new Date(x);
+
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hour = date.getHours();
+    var min = date.getMinutes();
+    var sec = date.getSeconds();
+
+    month = (month < 10 ? "0" : "") + month;
+    day = (day < 10 ? "0" : "") + day;
+    hour = (hour < 10 ? "0" : "") + hour;
+    min = (min < 10 ? "0" : "") + min;
+    sec = (sec < 10 ? "0" : "") + sec;
+
+    var str = date.getFullYear() + "-" + month + "-" + day + " " +  hour + ":" + min + ":" + sec;
+
+    return '<span class="dDate">' + str + '</span>'
+}, "timestamp (date with nanoseconds)", ['phoenixSign'])
+
+var allRenderers = [hexRenderer, stringRenderer, boolRenderer,
+    intRenderer, shortRenderer, longRenderer,
+    floatRenderer, doubleRenderer,
+    dateRenderer, timestampRenderer]
 
 var renderersMap = {}
 

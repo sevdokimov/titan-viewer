@@ -77,6 +77,11 @@
                 <label for="maxLength">Max field length (0 - unlimited)</label>
                 <input id="maxLength" type="text" ng-model="rendererAttr.maxLength" placeholder="30">
             </div>
+
+            <div ng-if="renderersMap[rendererName].supportedAttrs.indexOf('phoenixSign') >= 0" class="form-group">
+                <label for="phoenixSign">Phoenix signed type (highest bit is reverted)</label>
+                <input id="phoenixSign" type="checkbox" ng-model="rendererAttr.phoenixSign">
+            </div>
         </form>
     </div>
     <div class="modal-footer">
@@ -103,6 +108,11 @@
         <div ng-if="renderersMap[rendererName].supportedAttrs.indexOf('maxLength') >= 0" class="form-group">
             <label for="maxLengthId">Max field length (0 - unlimited)</label>
             <input id="maxLengthId" type="text" ng-model="rendererAttr.maxLength" placeholder="30">
+        </div>
+
+        <div ng-if="renderersMap[rendererName].supportedAttrs.indexOf('phoenixSign') >= 0" class="form-group">
+            <label for="phoenixSignId">Phoenix signed type (highest bit is reverted)</label>
+            <input id="phoenixSignId" type="checkbox" ng-model="rendererAttr.phoenixSign">
         </div>
     </div>
     <div class="modal-footer">

@@ -33,7 +33,7 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         }
 
         if (!$scope.keyFormat.rendererAttr) {
-            $scope.keyFormat.rendererAttr = {maxLength: "40", noWrap: true}
+            $scope.keyFormat.rendererAttr = {maxLength: "0", noWrap: true}
         }
 
         mergeRows($scope, response.data.scan.rows)
