@@ -207,6 +207,21 @@ public class HBaseDataServlet extends AbstractServlet {
         return res;
     }
 
+    public void keyRendererChanged(HTable hTable, HttpServletRequest request) {
+        String rendererName = request.getParameter("rendererName");
+        String rendererAttr = request.getParameter("rendererAttr");
+
+        TableView tableView = HBaseConfigManager.getInstance().getOrCreateTableView(hTable.getName().getQualifierAsString());
+
+        synchronized (tableView) {
+            TableView.KeySettings keySettings = tableView.getKey();
+            keySettings.setRendererName(rendererName);
+            keySettings.setRendererAttr(rendererAttr);
+
+            HBaseConfigManager.getInstance().saveTableView(tableView);
+        }
+    }
+
     public void columnRendererChanged(HTable hTable, HttpServletRequest request) {
         String family = request.getParameter("family");
         String q = request.getParameter("q");

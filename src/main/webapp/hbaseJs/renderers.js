@@ -270,6 +270,16 @@ function initRenderers() {
 initRenderers()
 
 /**
+ * @param name {string}
+ * @param def {Renderer}
+ * @return {Renderer}
+ */
+function findRendererByName(name, def) {
+    var res = renderersMap[name]
+    return res ? res : def
+}
+
+/**
  * @constructor
  */
 function RendererAttr() {

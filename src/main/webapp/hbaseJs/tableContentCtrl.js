@@ -29,6 +29,9 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
 
         $scope.tableView = response.data.tableView
 
+        $scope.keyFormat.renderer = findRendererByName($scope.tableView.key.rendererName, hexRenderer)
+        $scope.keyFormat.rendererAttr = JSON.parse($scope.tableView.key.rendererAttr)
+
         mergeRows($scope, response.data.scan.rows)
     }, function() {
         window.location = "/remoteError.html"
@@ -63,6 +66,9 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
             resolve: {
                 keyFormat: function () {
                     return $scope.keyFormat;
+                },
+                table: function() {
+                    return $scope.table
                 }
             }
         });
@@ -136,7 +142,7 @@ function loadRows($scope, $http, startRow, table) {
     })
 }
 
-hbaseViewer.controller('keyPropsCtrl', function ($scope, $http, $uibModalInstance, keyFormat) {
+hbaseViewer.controller('keyPropsCtrl', function ($scope, $http, $uibModalInstance, table, keyFormat) {
     $scope.rendererName = keyFormat.renderer.name
     $scope.rendererAttr = angular.copy(keyFormat.rendererAttr);
 
@@ -151,10 +157,9 @@ hbaseViewer.controller('keyPropsCtrl', function ($scope, $http, $uibModalInstanc
         keyFormat.renderer = renderer
         keyFormat.rendererAttr = $scope.rendererAttr
 
-        //$http.get("/hbasedata/columnRendererChanged",
-        //    {params: {table: table,
-        //        family: col.family.name, q: col.q,
-        //        rendererName: $scope.rendererName, rendererAttr: JSON.stringify($scope.rendererAttr)}})
+        $http.get("/hbasedata/keyRendererChanged",
+            {params: {table: table,
+                rendererName: $scope.rendererName, rendererAttr: JSON.stringify($scope.rendererAttr)}})
 
         $uibModalInstance.close();
     };
