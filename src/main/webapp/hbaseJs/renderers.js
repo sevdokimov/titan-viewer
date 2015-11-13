@@ -107,8 +107,16 @@ var stringRenderer = new Renderer("string", function(m, attr) {
     res.push("'>")
 
     for (var i = 0; i < m.length; i += 2) {
-        var x = parseInt(m.substr(i, 2), 16)
-        res.push(String.fromCharCode(x))
+        var x = String.fromCharCode(parseInt(m.substr(i, 2), 16))
+
+        if (x == '<')
+            res.push('&lt;')
+        else if (x == '>')
+            res.push('&gt;')
+        else if (x == '&')
+            res.push('&amp;')
+        else
+            res.push(x)
     }
 
     res.push("</span>")
