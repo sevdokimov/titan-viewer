@@ -50,7 +50,7 @@ Family.prototype.createColumnIfAbsent = function(name) {
 function Column(q, family) {
     this.q = q
     this.family = family
-    this.rendererAttr = {}
+    this.rendererAttr = new RendererAttr()
 }
 
 /**
@@ -68,7 +68,7 @@ Column.prototype.renderer = hexRenderer
  * @return {string}
  */
 Column.prototype.render = function(m) {
-
+    return this.renderer.render(m, this.rendererAttr)
 }
 
 /**
@@ -76,4 +76,11 @@ Column.prototype.render = function(m) {
  */
 function nonEmptyFamily(family) {
     return family.columns.length > 0
+}
+
+function safeParseJson(json, def) {
+    if (!json)
+        return null
+
+    return JSON.parse(json)
 }

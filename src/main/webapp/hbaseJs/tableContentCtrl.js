@@ -9,8 +9,6 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         $scope.simpleTableName = table.substring(idx + 1)
     }
 
-    $scope.keyFormat = {renderer: hexRenderer, rendererAttr: {maxLength: 40}}
-
     $scope.startKey = null
 
     $http.get("/hbasedata/firstScan", {params: {table: $routeParams.table}}).then(function (response) {
@@ -29,8 +27,14 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
 
         $scope.tableView = response.data.tableView
 
-        $scope.keyFormat.renderer = findRendererByName($scope.tableView.key.rendererName, hexRenderer)
-        $scope.keyFormat.rendererAttr = JSON.parse($scope.tableView.key.rendererAttr)
+        $scope.keyFormat = {
+            renderer: findRendererByName($scope.tableView.key.rendererName, hexRenderer),
+            rendererAttr: safeParseJson($scope.tableView.key.rendererAttr)
+        }
+
+        if (!$scope.keyFormat.rendererAttr) {
+            $scope.keyFormat.rendererAttr = {maxLength: "40", noWrap: true}
+        }
 
         mergeRows($scope, response.data.scan.rows)
     }, function() {
@@ -147,6 +151,7 @@ hbaseViewer.controller('keyPropsCtrl', function ($scope, $http, $uibModalInstanc
     $scope.rendererAttr = angular.copy(keyFormat.rendererAttr);
 
     $scope.allRenderers = allRenderers
+    $scope.renderersMap = renderersMap
 
     $scope.ok = function () {
         var renderer = renderersMap[$scope.rendererName]
@@ -175,6 +180,7 @@ hbaseViewer.controller('columnPropsCtrl', function ($scope, $http, $uibModalInst
     $scope.rendererAttr = angular.copy(col.rendererAttr);
 
     $scope.allRenderers = allRenderers
+    $scope.renderersMap = renderersMap
 
     $scope.ok = function () {
         var renderer = renderersMap[$scope.rendererName]

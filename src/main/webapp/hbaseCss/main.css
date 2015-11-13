@@ -11,12 +11,14 @@ body {
     /*color: saddlebrown;*/
     font-size: 10px;
     font-family: monospace;
+    white-space: pre-wrap;
     word-break: break-all;
 }
 
 .dStr {
     color: #080;
     font-size: 12px;
+    white-space: pre-wrap;
     word-break: break-all;
 }
 
@@ -33,13 +35,15 @@ body {
 .dFloat {
     color: #00f;
     font-size: 14px;
-    white-space: nowrap;
 }
 
 .dDate {
     color: #00b;
     font-size: 12px;
-    white-space: nowrap;
+}
+
+.noWrap {
+    white-space: pre;
 }
 
 .renderError {
@@ -52,10 +56,11 @@ body {
 
 #dataTable td {
     text-align: right;
+    white-space: pre;
 }
 
 #dataTable td.key {
-    white-space: nowrap;
+
 }
 
 #dataTable .columnHeader th {

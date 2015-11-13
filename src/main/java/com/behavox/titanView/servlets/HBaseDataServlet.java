@@ -164,6 +164,10 @@ public class HBaseDataServlet extends AbstractServlet {
 
         TableView tableView = HBaseConfigManager.getInstance().getOrCreateTableView(hTable.getName().getQualifierAsString());
 
+        synchronized (tableView) {
+            tableView.getOrCreateKeySettings();
+        }
+
         return new TableDescrAndContent(tableDescr, scanResult, tableView);
     }
 
@@ -214,7 +218,7 @@ public class HBaseDataServlet extends AbstractServlet {
         TableView tableView = HBaseConfigManager.getInstance().getOrCreateTableView(hTable.getName().getQualifierAsString());
 
         synchronized (tableView) {
-            TableView.KeySettings keySettings = tableView.getKey();
+            TableView.KeySettings keySettings = tableView.getOrCreateKeySettings();
             keySettings.setRendererName(rendererName);
             keySettings.setRendererAttr(rendererAttr);
 

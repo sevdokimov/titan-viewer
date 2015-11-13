@@ -3,11 +3,13 @@
  * @param name {string}
  * @param f {function}
  * @param description {string}
+ * @param supportedAttrs {string[]}
  */
-function Renderer(name, f, description) {
+function Renderer(name, f, description, supportedAttrs) {
     this.name = name
     this.f = f
     this.description = description ? description : name
+    this.supportedAttrs = supportedAttrs ? supportedAttrs : []
 }
 
 /**
@@ -40,8 +42,12 @@ function hexFormatter(m, attr) {
     var trimmed = false
 
     var maxLength = attr.maxLength
+
     if (!maxLength)
         maxLength = 30
+    else {
+        maxLength = parseInt(maxLength)
+    }
 
     if (maxLength > 0) {
         if (m.length > maxLength * 2) {
@@ -51,7 +57,13 @@ function hexFormatter(m, attr) {
     }
 
     var res = []
-    res.push("<span class='dHex'>")
+    res.push("<span class='dHex")
+
+    if (attr.noWrap) {
+        res.push(" noWrap")
+    }
+
+    res.push("'>")
 
     res.push(m)
 
@@ -64,7 +76,7 @@ function hexFormatter(m, attr) {
     return res.join('')
 }
 
-var hexRenderer = new Renderer("hex", hexFormatter)
+var hexRenderer = new Renderer("hex", hexFormatter, null, ['maxLength', 'noWrap'])
 
 var stringRenderer = new Renderer("string", function(m, attr) {
     var res = []
@@ -72,8 +84,12 @@ var stringRenderer = new Renderer("string", function(m, attr) {
     var trimmed = false
 
     var maxLength = attr.maxLength
+
     if (!maxLength)
         maxLength = 30
+    else {
+        maxLength = parseInt(maxLength)
+    }
 
     if (maxLength > 0) {
         if (m.length > maxLength * 2) {
@@ -82,7 +98,13 @@ var stringRenderer = new Renderer("string", function(m, attr) {
         }
     }
 
-    res.push("<span class='dStr'>")
+    res.push("<span class='dStr")
+
+    if (attr.noWrap) {
+        res.push(" noWrap")
+    }
+
+    res.push("'>")
 
     for (var i = 0; i < m.length; i += 2) {
         var x = parseInt(m.substr(i, 2), 16)
@@ -96,7 +118,7 @@ var stringRenderer = new Renderer("string", function(m, attr) {
     }
 
     return res.join('')
-})
+}, null, ['maxLength', 'noWrap'])
 
 var boolRenderer = new Renderer("boolean", function(m) {
     if (m == '00') {
@@ -108,7 +130,7 @@ var boolRenderer = new Renderer("boolean", function(m) {
     else {
         return null
     }
-})
+}, null, [])
 
 var intRenderer = new Renderer("int", function(m) {
     if (m.length != 4 * 2)
@@ -117,7 +139,7 @@ var intRenderer = new Renderer("int", function(m) {
     var x = parseInt(m, 16)
 
     return '<span class="dInt">' + x + '</span>'
-})
+}, null, [])
 
 var longRenderer = new Renderer("long", function(m) {
     if (m.length != 8 * 2)
@@ -126,7 +148,7 @@ var longRenderer = new Renderer("long", function(m) {
     var x = parseInt(m, 16)
 
     return '<span class="dInt">' + x + '</span>'
-})
+}, null, [])
 
 var floatRenderer = new Renderer("float", function(m) {
     if (m.length != 4 * 2)
@@ -143,26 +165,7 @@ var floatRenderer = new Renderer("float", function(m) {
     var res = floatView[0]
 
     return '<span class="dFloat">' + res + '</span>'
-})
-
-var floatPRenderer = new Renderer("floatP", function(m) {
-    if (m.length != 4 * 2)
-        return null;
-
-    var x = parseInt(m, 16)
-
-    var buffer = new ArrayBuffer(4);
-    var intView = new Int32Array(buffer);
-    var floatView = new Float32Array(buffer);
-
-    x ^= 0x80000000
-
-    intView[0] = x
-
-    var res = floatView[0]
-
-    return '<span class="dFloat">' + res + '</span>'
-}, 'float (phoenix)')
+}, null, ['phoenixSign'])
 
 var doubleRenderer = new Renderer("double", function(m) {
     if (m.length != 8 * 2)
@@ -181,28 +184,7 @@ var doubleRenderer = new Renderer("double", function(m) {
     var res = floatView[0]
 
     return '<span class="dFloat">' + res + '</span>'
-})
-
-var doublePRenderer = new Renderer("doubleP", function(m) {
-    if (m.length != 8 * 2)
-        return null;
-
-    var x1 = parseInt(m.substr(0, 4 * 2), 16)
-    var x2 = parseInt(m.substr(4 * 2, 4 * 2), 16)
-
-    var buffer = new ArrayBuffer(8);
-    var intView = new Int32Array(buffer);
-    var floatView = new Float64Array(buffer);
-
-    x1 ^= 0x80000000
-
-    intView[1] = x1
-    intView[0] = x2
-
-    var res = floatView[0]
-
-    return '<span class="dFloat">' + res + '</span>'
-}, 'double (phoenix)')
+}, null, ['phoenixSign'])
 
 var dateRenderer = new Renderer("date", function(m) {
     if (m.length != 8 * 2)
@@ -227,7 +209,7 @@ var dateRenderer = new Renderer("date", function(m) {
     var str = date.getFullYear() + "-" + month + "-" + day + " " +  hour + ":" + min + ":" + sec;
 
     return '<span class="dDate">' + str + '</span>'
-})
+}, null, ['phoenixSign'])
 
 //var timestampRenderer = new Renderer("timestamp", function(m) {
 //    if (m.length != 8 * 2 + 4 * 2)
@@ -257,17 +239,17 @@ var dateRenderer = new Renderer("date", function(m) {
 //})
 
 var allRenderers = [hexRenderer, stringRenderer, boolRenderer, intRenderer, longRenderer, dateRenderer,
-    floatRenderer, floatPRenderer, doubleRenderer, doublePRenderer]
+    floatRenderer, doubleRenderer]
 
 var renderersMap = {}
 
-function initRenderers() {
+function initRenders() {
     for (var i = 0; i < allRenderers.length; i++) {
         renderersMap[allRenderers[i].name] = allRenderers[i]
     }
 }
 
-initRenderers()
+initRenders()
 
 /**
  * @param name {string}
@@ -289,4 +271,9 @@ function RendererAttr() {
 /**
  * @type {number}
  */
-RendererAttr.prototype.maxLength = 30
+RendererAttr.prototype.maxLength = null
+
+/**
+ * @type {number}
+ */
+RendererAttr.prototype.noWrap = null

@@ -11,7 +11,7 @@ public class TableView {
 
     private final String tableName;
 
-    private final KeySettings key = new KeySettings();
+    private KeySettings key;
 
     private final Map<String, ColumnSettings> columns = new HashMap<>();
 
@@ -39,14 +39,18 @@ public class TableView {
         return res;
     }
 
-    public KeySettings getKey() {
-        return key;
+    public KeySettings getOrCreateKeySettings() {
+        if (this.key == null) {
+            this.key = new KeySettings();
+        }
+
+        return this.key;
     }
 
     public static class ColumnSettings {
         private String rendererName;
 
-        private String rendererAttr = "{}";
+        private String rendererAttr;
 
         public String getRendererName() {
             return rendererName;
@@ -68,7 +72,7 @@ public class TableView {
     public static class KeySettings {
         private String rendererName;
 
-        private String rendererAttr = "{}";
+        private String rendererAttr;
 
         public String getRendererName() {
             return rendererName;

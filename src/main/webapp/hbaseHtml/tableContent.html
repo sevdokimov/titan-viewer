@@ -47,7 +47,7 @@
                 <tr ng-repeat="row in data track by $index">
                     <td class="key" ng-bind-html="keyFormat.renderer.render(row.key, keyFormat.rendererAttr)"></td>
 
-                    <td ng-repeat="c in columns" ng-bind-html="c.renderer.render(row.data[c.family.name][c.q])"></td>
+                    <td ng-repeat="c in columns" ng-bind-html="c.render(row.data[c.family.name][c.q])"></td>
                 </tr>
                 </tbody>
             </table>
@@ -62,8 +62,22 @@
         <h3 class="modal-title">Column {{col.family.name}}:{{col.q}}</strons></h3>
     </div>
     <div class="modal-body">
-        Renderer:
-        <select ng-model="rendererName" ng-options="r.name as r.description for r in allRenderers"></select>
+        <form>
+            <div class="form-group">
+                <label for="rendererName">Renderer:</label>
+                <select id="rendererName" ng-model="rendererName" ng-options="r.name as r.description for r in allRenderers"></select>
+            </div>
+
+            <div ng-if="renderersMap[rendererName].supportedAttrs.indexOf('noWrap') >= 0" class="form-group">
+                <label for="noWrap">No line break</label>
+                <input id="noWrap" type="checkbox" ng-model="rendererAttr.noWrap">
+            </div>
+
+            <div ng-if="renderersMap[rendererName].supportedAttrs.indexOf('maxLength') >= 0" class="form-group">
+                <label for="maxLength">Max field length (0 - unlimited)</label>
+                <input id="maxLength" type="text" ng-model="rendererAttr.maxLength" placeholder="30">
+            </div>
+        </form>
     </div>
     <div class="modal-footer">
         <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
@@ -76,8 +90,20 @@
         <h3 class="modal-title">Row key</strons></h3>
     </div>
     <div class="modal-body">
-        Renderer:
-        <select ng-model="rendererName" ng-options="r.name as r.name for r in allRenderers"></select>
+        <div class="form-group">
+            <label for="rendererNameId">Renderer:</label>
+            <select id="rendererNameId" ng-model="rendererName" ng-options="r.name as r.description for r in allRenderers"></select>
+        </div>
+
+        <div ng-if="renderersMap[rendererName].supportedAttrs.indexOf('noWrap') >= 0" class="form-group">
+            <label for="noWrapId">No line break</label>
+            <input id="noWrapId" type="checkbox" ng-model="rendererAttr.noWrap">
+        </div>
+
+        <div ng-if="renderersMap[rendererName].supportedAttrs.indexOf('maxLength') >= 0" class="form-group">
+            <label for="maxLengthId">Max field length (0 - unlimited)</label>
+            <input id="maxLengthId" type="text" ng-model="rendererAttr.maxLength" placeholder="30">
+        </div>
     </div>
     <div class="modal-footer">
         <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
