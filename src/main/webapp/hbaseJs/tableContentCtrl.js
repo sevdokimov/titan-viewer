@@ -79,7 +79,90 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
     }
 
     $scope.nonEmptyFamily = nonEmptyFamily
+
+    $scope.showMore = function(event) {
+        var target = event.target
+
+        if (target.tagName != 'SPAN' || target.className != 'showMore') return;
+
+        do {
+            target = target.parentNode
+
+            if (!target) return
+        } while (target.tagName != 'TD')
+
+        var tr = target.parentNode
+
+        var rowIndex = tr.getAttribute('rowIndex')
+
+        var colIdx = 0
+
+        for (var currTd = target; currTd.previousElementSibling != null; currTd = currTd.previousElementSibling) {
+            colIdx++
+        }
+
+        var data = $scope.data[parseInt(rowIndex)]
+
+        var value
+        var col
+        var rowKey = data.key
+
+        if (colIdx == 0) {
+            value = rowKey
+        }
+        else {
+            col = findColumn($scope.families, colIdx - 1)
+
+            if (!col)
+                return
+
+            value = data.data[col.family.name][col.q]
+        }
+
+        var modalInstance = $uibModal.open({
+            templateUrl: 'showCellDialog.html',
+            controller: 'showCellCtrl',
+            size: 'lg',
+            resolve: {
+                table: function () {
+                    return $scope.table;
+                },
+                column: function() {
+                    return col
+                },
+                rowKey: function() {
+                    return rowKey
+                },
+                value: function() {
+                    return value
+                },
+                keyFormat: function() {
+                    return $scope.keyFormat
+                }
+            }
+        });
+    }
 });
+
+/**
+ * @param famelies {Family[]}
+ * @param index {number}
+ * @return {Column}
+ */
+function findColumn(famelies, index) {
+    for (var i = 0; i < famelies.length; i++) {
+        if (famelies[i].shown) {
+            if (famelies[i].columns.length <= index) {
+                index -= famelies[i].columns.length
+            }
+            else {
+                return famelies[i].columns[index]
+            }
+        }
+    }
+
+    return null;
+}
 
 function mergeRows($scope, rows) {
     var columnsChanged = false
@@ -198,6 +281,27 @@ hbaseViewer.controller('columnPropsCtrl', function ($scope, $http, $uibModalInst
 
         $uibModalInstance.close();
     };
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+});
+
+hbaseViewer.controller('showCellCtrl', function ($scope, $http, $uibModalInstance, table, keyFormat, rowKey, column, value) {
+    $scope.column = column
+
+    $scope.value = value
+
+    $scope.render = function(value) {
+        var attr = {maxLength: '0'}
+
+        if (!column) {
+            return keyFormat.renderer.render(value, attr)
+        }
+        else {
+            return column.renderer.render(value, attr)
+        }
+    }
+
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };

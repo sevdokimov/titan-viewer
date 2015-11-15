@@ -21,7 +21,7 @@
         </div>
 
         <div ng-if="data && data.length > 0">
-            <table id="dataTable" class="table table-bordered table-striped">
+            <table id="dataTable" class="table table-bordered table-striped" ng-click="showMore($event)">
                 <thead>
                 <tr>
                     <th rowspan="2" class="keyHeader">
@@ -44,7 +44,7 @@
                 </thead>
 
                 <tbody>
-                <tr ng-repeat="row in data track by $index">
+                <tr ng-repeat="row in data track by $index" rowIndex="{{$index}}">
                     <td class="key" ng-bind-html="keyFormat.renderer.render(row.key, keyFormat.rendererAttr)"></td>
 
                     <td ng-repeat="c in columns" ng-bind-html="c.render(row.data[c.family.name][c.q])"></td>
@@ -59,7 +59,7 @@
 
 <script type="text/ng-template" id="selectTypeDialog.html">
     <div class="modal-header">
-        <h3 class="modal-title">Column {{col.family.name}}:{{col.q}}</strons></h3>
+        <h3 class="modal-title">Column {{col.family.name}}:{{col.q}}</h3>
     </div>
     <div class="modal-body">
         <form>
@@ -92,7 +92,7 @@
 
 <script type="text/ng-template" id="selectIdTypeDialog.html">
     <div class="modal-header">
-        <h3 class="modal-title">Row key</strons></h3>
+        <h3 class="modal-title">Row key</h3>
     </div>
     <div class="modal-body">
         <div class="form-group">
@@ -118,6 +118,30 @@
     <div class="modal-footer">
         <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
         <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="showCellDialog.html">
+    <div class="modal-header">
+        <h3 class="modal-title">
+            <span ng-if="column">
+                Value of {{column.family.name}}:{{column.q}}
+            </span>
+            <span ng-if="!column">
+                Value of key
+            </span>
+        </h3>
+    </div>
+    <div class="modal-body">
+
+        <div ng-if="!value">
+            <img src="../img/progress.gif"> Loading...
+        </div>
+
+        <div class="cellDataContainer" ng-if="value" ng-bind-html="render(value)">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Close</button>
     </div>
 </script>
 

@@ -96,3 +96,16 @@ body {
 
     padding: 30px 40px;
 }
+
+.showMore {
+    cursor: pointer;
+    color: blue;
+    font-weight: bold;
+}
+
+.cellDataContainer {
+    padding: 5px;
+    border: 1px solid black;
+    background: #fff;
+    word-break: break-all;
+}

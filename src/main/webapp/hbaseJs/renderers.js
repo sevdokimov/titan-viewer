@@ -67,11 +67,10 @@ function hexFormatter(m, attr) {
 
     res.push(m)
 
-    res.push()
     res.push("</span>")
 
     if (trimmed)
-        res.push('...')
+        res.push('<span class="showMore">...</span>')
 
     return res.join('')
 }
@@ -122,7 +121,7 @@ var stringRenderer = new Renderer("string", function(m, attr) {
     res.push("</span>")
 
     if (trimmed) {
-        res.push('...')
+        res.push('<span class="showMore">...</span>')
     }
 
     return res.join('')
