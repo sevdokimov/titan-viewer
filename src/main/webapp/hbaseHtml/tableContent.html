@@ -1,15 +1,15 @@
 <div class="container-fluid">
     <div class="row">
-        <h3>
-            Table
-            <span ng-if="namespace">
-                <a ng-href="#/n/{{namespace}}">{{namespace}}</a>:{{simpleTableName}}
-            </span>
-            <span ng-if="!namespace">
-                {{table}}
-            </span>
-        </h3>
+        <h3>Table <a ng-href="#/n/{{namespace}}">{{namespace}}</a>:{{simpleTableName}}</h3>
+
+        <img src="../img/diff.png" class="imgButton" title="Compare with other namespace"
+             ng-if="otherNamespaces && otherNamespaces.length > 0"
+             uib-popover-template="'selectNamespacePopover.html'" popover-placement="right"
+             popover-title="Select namespace to compare"
+        >
     </div>
+
+    <div style="height: 20px;"></div>
 
     <div class="row">
         <div ng-if="!data">
@@ -145,3 +145,10 @@
     </div>
 </script>
 
+<script type="text/ng-template" id="selectNamespacePopover.html">
+    <div>
+        <div ng-repeat="ns in otherNamespaces">
+            <a ng-href="#/compare/{{namespace}}/{{simpleTableName}}/{{ns}}/{{simpleTableName}}" target="_blank">{{ns}}</a>
+        </div>
+    </div>
+</script>

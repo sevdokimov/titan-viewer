@@ -4,10 +4,11 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
     $scope.table = table
 
     var idx = table.indexOf(':')
-    if (idx >= 0) {
-        $scope.namespace = table.substring(0, idx)
-        $scope.simpleTableName = table.substring(idx + 1)
-    }
+    if (idx == -1)
+        throw "Invalid table name"
+
+    $scope.namespace = table.substring(0, idx)
+    $scope.simpleTableName = table.substring(idx + 1)
 
     $scope.startKey = null
 
@@ -24,6 +25,8 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         $scope.nextRowKey = response.data.scan.nextRowKey
 
         $scope.data = []
+
+        $scope.otherNamespaces = response.data.otherNamespaces
 
         $scope.tableView = response.data.tableView
 

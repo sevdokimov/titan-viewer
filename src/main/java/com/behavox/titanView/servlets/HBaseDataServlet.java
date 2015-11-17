@@ -11,6 +11,7 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,7 +169,86 @@ public class HBaseDataServlet extends AbstractServlet {
             tableView.getOrCreateKeySettings();
         }
 
-        return new TableDescrAndContent(tableDescr, scanResult, tableView);
+        TableDescrAndContent res = new TableDescrAndContent(tableDescr, scanResult, tableView);
+
+        List<String> otherNamespaces = Stream.of(HBaseManager.getInstance().getAdmin().listTables())
+                .map(HTableDescriptor::getTableName)
+                .filter(it -> {
+                    return Arrays.equals(it.getQualifier(), hTable.getName().getQualifier())
+                        && !Arrays.equals(it.getNamespace(), hTable.getName().getNamespace());
+        }).map(TableName::getNamespaceAsString).distinct().sorted().collect(Collectors.toList());
+
+        res.otherNamespaces = otherNamespaces;
+
+        return res;
+    }
+
+    public ComparisonResult compare(HttpServletRequest request) throws IOException {
+        String tableName1 = request.getParameter("table1");
+        String tableName2 = request.getParameter("table2");
+
+        HBaseAdmin admin = HBaseManager.getInstance().getAdmin();
+
+        if (!admin.tableExists(tableName1))
+            return new ComparisonResult("Table " + tableName1 + " is not exist");
+
+        if (!admin.tableExists(tableName2))
+            return new ComparisonResult("Table " + tableName2 + " is not exist");
+
+        HTable table1 = HBaseManager.getInstance().getTable(tableName1);
+        HTable table2 = HBaseManager.getInstance().getTable(tableName2);
+
+        Scan scan = new Scan();
+
+        ComparisonResult res = new ComparisonResult(null);
+
+        try (ResultScanner scanner1 = table1.getScanner(scan)) {
+            try (ResultScanner scanner2 = table2.getScanner(scan)) {
+
+                do {
+                    Result result1 = scanner1.next();
+                    Result result2 = scanner2.next();
+
+                    if (result1 == null && result2 == null)
+                        break;
+
+                    if (result1 == null) {
+                        res.unmatchedRowKey = result2.getRow();
+                        break;
+                    }
+
+                    if (result2 == null) {
+                        res.unmatchedRowKey = result1.getRow();
+                        break;
+                    }
+
+                    BinaryComparator key1 = new BinaryComparator(result1.getRow());
+
+                    int cmp = key1.compareTo(result2.getRow());
+
+                    if (cmp > 0) {
+                        res.unmatchedRowKey = result2.getRow();
+                        break;
+                    }
+                    if (cmp < 0) {
+                        res.unmatchedRowKey = result1.getRow();
+                        break;
+                    }
+
+                    try {
+                        Result.compareResults(result1, result2);
+                    } catch (Exception e) {
+                        res.unmatchedRowKey = result1.getRow();
+                        break;
+                    }
+
+                    res.rowCount++;
+                }
+                while (true);
+            }
+        }
+
+        return res;
     }
 
     public ScanResult scan(HTable hTable, HttpServletRequest request) throws IOException {
@@ -280,6 +360,8 @@ public class HBaseDataServlet extends AbstractServlet {
 
         private final TableView tableView;
 
+        private List<String> otherNamespaces;
+
         public TableDescrAndContent(TableDescr descr, ScanResult scan, TableView tableView) {
             this.table = descr;
             this.scan = scan;
@@ -287,4 +369,15 @@ public class HBaseDataServlet extends AbstractServlet {
         }
     }
 
+    public static class ComparisonResult {
+        private String error;
+
+        private byte[] unmatchedRowKey;
+
+        private long rowCount;
+
+        public ComparisonResult(String error) {
+            this.error = error;
+        }
+    }
 }

@@ -1,0 +1,34 @@
+<div class="container">
+    <div class="row">
+        <h3>Table comparation</h3>
+
+        Table1: <strong><a ng-href="#/n/{{ns1}}">{{ns1}}</a>:{{tableName1}}</strong> <br>
+        Table2: <strong><a ng-href="#/n/{{ns2}}">{{ns2}}</a>:{{tableName2}}</strong>
+
+        <br>
+        <br>
+
+        <div ng-if="!result">
+            <img src="../img/progress.gif"> Loading...
+        </div>
+
+        <div ng-if="result">
+            <div ng-if="result.error" class="alert alert-danger" role="alert">{{result.error}}</div>
+
+            <div ng-if="!result.error" >
+                <div ng-if="!result.unmatchedRowKey">
+                    <div>
+                        Tables are equals. {{result.rowCount}} rows was compared.
+                    </div>
+                </div>
+                <div ng-if="result.unmatchedRowKey">
+                    <div>
+                        Not equals<br>
+                        {{result.rowCount}} rows are equals.<br>
+                        first unmatched row key: {{result.unmatchedRowKey}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
