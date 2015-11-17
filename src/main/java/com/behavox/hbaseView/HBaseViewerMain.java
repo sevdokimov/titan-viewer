@@ -15,9 +15,9 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Properties;
 
-public class TitanViewerMain {
+public class HBaseViewerMain {
 
-    private static final Logger log = LoggerFactory.getLogger(TitanViewerMain.class);
+    private static final Logger log = LoggerFactory.getLogger(HBaseViewerMain.class);
 
     private static Server server;
 
@@ -30,7 +30,7 @@ public class TitanViewerMain {
 
         StdErrLog.setProperties(p);
 
-        URL webXmlRes = TitanViewerMain.class.getClassLoader().getResource("webapp/WEB-INF/web.xml");
+        URL webXmlRes = HBaseViewerMain.class.getClassLoader().getResource("webapp/WEB-INF/web.xml");
 
         String webXmlStr = webXmlRes.toString();
 
@@ -49,7 +49,7 @@ public class TitanViewerMain {
 
             webAppCtx.setResourceBase(moduleRoot.getAbsolutePath() + "/src/main/webapp");
 
-            URL classesUrl = TitanViewerMain.class.getProtectionDomain().getCodeSource().getLocation();
+            URL classesUrl = HBaseViewerMain.class.getProtectionDomain().getCodeSource().getLocation();
 
             webAppCtx.getMetaData().setWebInfClassesDirs(Collections.singletonList(Resource.newResource(classesUrl)));
 
