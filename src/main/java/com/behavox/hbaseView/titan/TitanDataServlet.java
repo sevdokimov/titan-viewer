@@ -1,13 +1,13 @@
-package com.behavox.hbaseView.servlets;
+package com.behavox.hbaseView.titan;
 
 import com.behavox.hbaseView.HBaseManager;
 import com.behavox.hbaseView.Utils;
-import com.behavox.hbaseView.titan.GraphManager;
-import com.behavox.hbaseView.titan.TitanUtils;
+import com.behavox.hbaseView.servlets.AbstractServlet;
 import com.behavox.hbaseView.titan.json.FullVertexJson;
 import com.behavox.hbaseView.titan.json.HalfEdgeJson;
 import com.behavox.hbaseView.titan.json.ObjectJson;
 import com.behavox.hbaseView.titan.json.ShortEdgeJson;
+import com.behavox.hbaseView.titan.viewModel.Config;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.thinkaurelius.titan.core.TitanEdge;
@@ -38,14 +38,14 @@ import java.util.*;
  *
  */
 @SuppressWarnings({"UnusedParameters", "unused"})
-public class DataServlet extends AbstractServlet {
+public class TitanDataServlet extends AbstractServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(DataServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(TitanDataServlet.class);
 
     private static final Map<String, Method> methods = new HashMap<>();
 
     static {
-        for (Method method : DataServlet.class.getDeclaredMethods()) {
+        for (Method method : TitanDataServlet.class.getDeclaredMethods()) {
             if (Modifier.isPublic(method.getModifiers())) {
                 Class<?>[] parameterTypes = method.getParameterTypes();
 
@@ -130,6 +130,10 @@ public class DataServlet extends AbstractServlet {
             if (graph != null)
                 graph.commit();
         }
+    }
+
+    protected Config getConfig() {
+        return (Config) getRequest().getAttribute("cfg");
     }
 
     public QueryResult vertexList(TitanGraph g, HttpServletRequest req) {

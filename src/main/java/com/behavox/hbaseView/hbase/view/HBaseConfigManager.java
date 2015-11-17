@@ -1,11 +1,13 @@
 package com.behavox.hbaseView.hbase.view;
 
 import com.behavox.hbaseView.Utils;
-import com.behavox.hbaseView.titan.TitanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

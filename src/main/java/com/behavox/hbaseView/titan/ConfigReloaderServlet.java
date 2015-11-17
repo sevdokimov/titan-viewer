@@ -1,6 +1,5 @@
-package com.behavox.hbaseView.servlets;
+package com.behavox.hbaseView.titan;
 
-import com.behavox.hbaseView.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

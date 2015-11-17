@@ -1,6 +1,5 @@
 package com.behavox.hbaseView.servlets;
 
-import com.behavox.hbaseView.titan.viewModel.Config;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletException;
@@ -30,10 +29,6 @@ public abstract class AbstractServlet extends HttpServlet {
     @NotNull
     protected HttpServletRequest getRequest() {
         return request.get();
-    }
-
-    protected Config getConfig() {
-        return (Config) getRequest().getAttribute("cfg");
     }
 
     protected Long getLongParam(String name) {

@@ -4,7 +4,7 @@
 
     <servlet>
         <servlet-name>dataServlet</servlet-name>
-        <servlet-class>com.behavox.hbaseView.servlets.DataServlet</servlet-class>
+        <servlet-class>com.behavox.hbaseView.titan.TitanDataServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>dataServlet</servlet-name>
@@ -22,7 +22,7 @@
 
     <servlet>
         <servlet-name>cfgReloader</servlet-name>
-        <servlet-class>com.behavox.hbaseView.servlets.ConfigReloaderServlet</servlet-class>
+        <servlet-class>com.behavox.hbaseView.titan.ConfigReloaderServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>cfgReloader</servlet-name>

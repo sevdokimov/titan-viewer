@@ -2,7 +2,6 @@ package com.behavox.hbaseView.servlets;
 
 import com.behavox.hbaseView.HBaseManager;
 import com.behavox.hbaseView.Utils;
-import com.behavox.hbaseView.titan.TitanUtils;
 import com.behavox.hbaseView.hbase.view.HBaseConfigManager;
 import com.behavox.hbaseView.hbase.view.TableView;
 import com.google.common.base.Strings;
@@ -33,7 +32,7 @@ import java.util.stream.Stream;
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class HBaseDataServlet extends AbstractServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(DataServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(HBaseDataServlet.class);
 
     private static final Map<String, Method> methods = new HashMap<>();
 

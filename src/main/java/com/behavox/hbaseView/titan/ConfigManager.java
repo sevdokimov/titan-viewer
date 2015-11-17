@@ -1,4 +1,4 @@
-package com.behavox.hbaseView;
+package com.behavox.hbaseView.titan;
 
 import com.behavox.hbaseView.titan.viewModel.Config;
 import com.behavox.hbaseView.titan.viewModel.VertexType;

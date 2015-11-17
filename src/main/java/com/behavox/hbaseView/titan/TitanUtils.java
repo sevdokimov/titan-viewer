@@ -1,23 +1,14 @@
 package com.behavox.hbaseView.titan;
 
-import com.behavox.hbaseView.ConfigManager;
 import com.behavox.hbaseView.titan.json.ShortVertexJson;
 import com.behavox.hbaseView.titan.viewModel.*;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import com.thinkaurelius.titan.core.EdgeLabel;
 import com.thinkaurelius.titan.core.TitanEdge;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.TitanVertex;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
