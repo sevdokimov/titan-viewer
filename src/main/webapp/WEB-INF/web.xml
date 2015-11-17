@@ -4,7 +4,7 @@
 
     <servlet>
         <servlet-name>dataServlet</servlet-name>
-        <servlet-class>com.behavox.titanView.servlets.DataServlet</servlet-class>
+        <servlet-class>com.behavox.hbaseView.servlets.DataServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>dataServlet</servlet-name>
@@ -13,7 +13,7 @@
 
     <servlet>
         <servlet-name>hbaseDataServlet</servlet-name>
-        <servlet-class>com.behavox.titanView.servlets.HBaseDataServlet</servlet-class>
+        <servlet-class>com.behavox.hbaseView.servlets.HBaseDataServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>hbaseDataServlet</servlet-name>
@@ -22,7 +22,7 @@
 
     <servlet>
         <servlet-name>cfgReloader</servlet-name>
-        <servlet-class>com.behavox.titanView.servlets.ConfigReloaderServlet</servlet-class>
+        <servlet-class>com.behavox.hbaseView.servlets.ConfigReloaderServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>cfgReloader</servlet-name>
@@ -31,7 +31,7 @@
 
     <!--<servlet>-->
         <!--<servlet-name>defaultMapping</servlet-name>-->
-        <!--<servlet-class>com.behavox.titanView.servlets.VertexListServletlet</servlet-class>-->
+        <!--<servlet-class>com.behavox.hbaseView.servlets.VertexListServletlet</servlet-class>-->
     <!--</servlet>-->
 
     <!--<servlet-mapping>-->
