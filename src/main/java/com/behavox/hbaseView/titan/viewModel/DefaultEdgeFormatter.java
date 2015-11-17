@@ -1,4 +1,4 @@
-package com.behavox.hbaseView.viewModel;
+package com.behavox.hbaseView.titan.viewModel;
 
 import com.google.common.html.HtmlEscapers;
 import com.thinkaurelius.titan.core.TitanEdge;

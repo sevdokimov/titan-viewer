@@ -2,6 +2,7 @@ package com.behavox.hbaseView.servlets;
 
 import com.behavox.hbaseView.HBaseManager;
 import com.behavox.hbaseView.Utils;
+import com.behavox.hbaseView.titan.TitanUtils;
 import com.behavox.hbaseView.hbase.view.HBaseConfigManager;
 import com.behavox.hbaseView.hbase.view.TableView;
 import com.google.common.base.Strings;

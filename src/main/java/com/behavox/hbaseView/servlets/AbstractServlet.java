@@ -1,6 +1,6 @@
 package com.behavox.hbaseView.servlets;
 
-import com.behavox.hbaseView.viewModel.Config;
+import com.behavox.hbaseView.titan.viewModel.Config;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletException;

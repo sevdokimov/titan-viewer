@@ -1,6 +1,6 @@
-package com.behavox.hbaseView.viewModel;
+package com.behavox.hbaseView.titan.viewModel;
 
-import com.behavox.hbaseView.json.ShortVertexJson;
+import com.behavox.hbaseView.titan.json.ShortVertexJson;
 import com.thinkaurelius.titan.core.TitanElement;
 import com.thinkaurelius.titan.core.TitanVertex;
 

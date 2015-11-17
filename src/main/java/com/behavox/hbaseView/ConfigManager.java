@@ -1,9 +1,9 @@
 package com.behavox.hbaseView;
 
-import com.behavox.hbaseView.viewModel.Config;
-import com.behavox.hbaseView.viewModel.VertexType;
-import com.behavox.hbaseView.viewModel.PropertyPredicate;
-import com.behavox.hbaseView.viewModel.StringFormatter;
+import com.behavox.hbaseView.titan.viewModel.Config;
+import com.behavox.hbaseView.titan.viewModel.VertexType;
+import com.behavox.hbaseView.titan.viewModel.PropertyPredicate;
+import com.behavox.hbaseView.titan.viewModel.StringFormatter;
 
 import java.util.Arrays;
 

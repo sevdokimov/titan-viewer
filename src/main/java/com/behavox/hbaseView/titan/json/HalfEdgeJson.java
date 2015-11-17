@@ -1,6 +1,6 @@
-package com.behavox.hbaseView.json;
+package com.behavox.hbaseView.titan.json;
 
-import com.behavox.hbaseView.Utils;
+import com.behavox.hbaseView.titan.TitanUtils;
 import com.thinkaurelius.titan.core.TitanEdge;
 import com.thinkaurelius.titan.core.TitanVertex;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,7 @@ public class HalfEdgeJson {
 
         label = edge.getLabel();
 
-        this.shortView = Utils.format(edge.getOtherVertex(src));
+        this.shortView = TitanUtils.format(edge.getOtherVertex(src));
     }
 
     public String getId() {

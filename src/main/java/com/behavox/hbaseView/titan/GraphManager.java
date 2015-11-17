@@ -1,5 +1,6 @@
-package com.behavox.hbaseView;
+package com.behavox.hbaseView.titan;
 
+import com.behavox.hbaseView.HBaseManager;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.thinkaurelius.titan.core.TitanFactory;

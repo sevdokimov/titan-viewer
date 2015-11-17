@@ -1,4 +1,4 @@
-package com.behavox.hbaseView.viewModel;
+package com.behavox.hbaseView.titan.viewModel;
 
 import com.tinkerpop.blueprints.Vertex;
 import org.jetbrains.annotations.NotNull;

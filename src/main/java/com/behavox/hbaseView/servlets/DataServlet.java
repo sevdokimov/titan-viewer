@@ -1,12 +1,13 @@
 package com.behavox.hbaseView.servlets;
 
-import com.behavox.hbaseView.GraphManager;
 import com.behavox.hbaseView.HBaseManager;
 import com.behavox.hbaseView.Utils;
-import com.behavox.hbaseView.json.FullVertexJson;
-import com.behavox.hbaseView.json.ObjectJson;
-import com.behavox.hbaseView.json.HalfEdgeJson;
-import com.behavox.hbaseView.json.ShortEdgeJson;
+import com.behavox.hbaseView.titan.GraphManager;
+import com.behavox.hbaseView.titan.TitanUtils;
+import com.behavox.hbaseView.titan.json.FullVertexJson;
+import com.behavox.hbaseView.titan.json.HalfEdgeJson;
+import com.behavox.hbaseView.titan.json.ObjectJson;
+import com.behavox.hbaseView.titan.json.ShortEdgeJson;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.thinkaurelius.titan.core.TitanEdge;
@@ -164,7 +165,7 @@ public class DataServlet extends AbstractServlet {
         try {
             compiledScript = engine.compile(scriptSource);
         } catch (ScriptException e) {
-            res.error = Utils.toString(e);
+            res.error = TitanUtils.toString(e);
 
             return res;
         }
@@ -186,7 +187,7 @@ public class DataServlet extends AbstractServlet {
                 res.convertAndAdd(r);
             }
         } catch (ScriptException e) {
-            res.error = Utils.toString(e);
+            res.error = TitanUtils.toString(e);
         }
 
         res.executionTime = System.currentTimeMillis() - startTime;
@@ -203,7 +204,7 @@ public class DataServlet extends AbstractServlet {
     }
 
     public List<String> edgeLabels(TitanGraph g, HttpServletRequest req) {
-        return Utils.getEdgeLabels(g);
+        return TitanUtils.getEdgeLabels(g);
     }
 
     public String openGraph(TitanGraph g, HttpServletRequest req) {
@@ -224,7 +225,7 @@ public class DataServlet extends AbstractServlet {
 
         Map<String, EdgeListResult> res = new HashMap<>();
 
-        for (String label : Utils.getEdgeLabels(g)) {
+        for (String label : TitanUtils.getEdgeLabels(g)) {
             Iterable<Edge> edges = vertex.getEdges(inVertex ? Direction.IN : Direction.OUT, label);
 
             EdgeListResult edgeList = new EdgeListResult();
@@ -300,7 +301,7 @@ public class DataServlet extends AbstractServlet {
                 elements.add(o);
             }
             else if (o instanceof TitanVertex) {
-                elements.add(Utils.format((TitanVertex) o));
+                elements.add(TitanUtils.format((TitanVertex) o));
             }
             else if (o instanceof TitanEdge) {
                 elements.add(new ShortEdgeJson((TitanEdge) o));

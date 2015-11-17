@@ -1,4 +1,4 @@
-package com.behavox.hbaseView.json;
+package com.behavox.hbaseView.titan.json;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

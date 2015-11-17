@@ -1,6 +1,6 @@
-package com.behavox.hbaseView.json;
+package com.behavox.hbaseView.titan.json;
 
-import com.behavox.hbaseView.Utils;
+import com.behavox.hbaseView.titan.TitanUtils;
 import com.thinkaurelius.titan.core.TitanProperty;
 import com.thinkaurelius.titan.core.TitanVertex;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class FullVertexJson {
             props.put(property.getPropertyKey().getName(), property.getValue());
         }
 
-        shortView = Utils.format(v);
+        shortView = TitanUtils.format(v);
     }
 
     public String getLabel() {

@@ -1,5 +1,6 @@
 package com.behavox.hbaseView;
 
+import com.behavox.hbaseView.titan.TitanUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

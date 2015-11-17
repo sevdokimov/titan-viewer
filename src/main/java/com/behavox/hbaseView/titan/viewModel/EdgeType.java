@@ -1,6 +1,6 @@
-package com.behavox.hbaseView.viewModel;
+package com.behavox.hbaseView.titan.viewModel;
 
-import com.behavox.hbaseView.json.ShortEdgeJson;
+import com.behavox.hbaseView.titan.json.ShortEdgeJson;
 import com.thinkaurelius.titan.core.TitanEdge;
 import com.thinkaurelius.titan.core.TitanElement;
 

@@ -1,7 +1,7 @@
-package com.behavox.hbaseView.viewModel;
+package com.behavox.hbaseView.titan.viewModel;
 
 import com.behavox.hbaseView.ConfigManager;
-import com.behavox.hbaseView.json.ShortVertexJson;
+import com.behavox.hbaseView.titan.json.ShortVertexJson;
 import com.google.common.html.HtmlEscapers;
 import com.thinkaurelius.titan.core.TitanVertex;
 import org.jetbrains.annotations.NotNull;
