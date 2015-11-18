@@ -6,10 +6,7 @@ import com.behavox.hbaseView.hbase.view.HBaseConfigManager;
 import com.behavox.hbaseView.hbase.view.TableView;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.NamespaceDescriptor;
-import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.BinaryComparator;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -246,6 +243,9 @@ public class HBaseDataServlet extends AbstractServlet {
                 }
                 while (true);
             }
+        }
+        catch (TableNotEnabledException e) {
+            return new ComparisonResult(e.getMessage());
         }
 
         return res;
