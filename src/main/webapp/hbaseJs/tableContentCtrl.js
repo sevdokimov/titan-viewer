@@ -1,4 +1,4 @@
-hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams, $uibModal) {
+hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams, $uibModal, $location) {
     var table = $routeParams.table
 
     $scope.table = table
@@ -10,9 +10,14 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
     $scope.namespace = table.substring(0, idx)
     $scope.simpleTableName = table.substring(idx + 1)
 
-    $scope.startKey = null
+    var param = $location.search()
 
-    $http.get("/hbasedata/firstScan", {params: {table: $routeParams.table}}).then(function (response) {
+    $scope.startRow = param.startRow || ''
+
+    $scope.stopRow = param.stopRow || ''
+
+    $http.get("/hbasedata/firstScan", {params: {table: $routeParams.table, startRow: $scope.startRow,
+        stopRow: $scope.stopRow}}).then(function (response) {
         var f = response.data.table.families
 
         /** @type {Family[]} */

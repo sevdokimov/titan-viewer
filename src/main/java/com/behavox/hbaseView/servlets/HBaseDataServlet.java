@@ -255,12 +255,12 @@ public class HBaseDataServlet extends AbstractServlet {
         Scan scan = new Scan();
 
         String firstRow = request.getParameter("startRow");
-        if (firstRow != null) {
+        if (firstRow != null && firstRow.length() > 0) {
             scan.setStartRow(Bytes.fromHex(firstRow));
         }
 
         String stopRow = request.getParameter("stopRow");
-        if (stopRow != null) {
+        if (stopRow != null && stopRow.length() > 0) {
             scan.setStopRow(Bytes.fromHex(stopRow));
         }
 
