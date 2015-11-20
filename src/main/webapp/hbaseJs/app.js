@@ -16,7 +16,8 @@ hbaseViewer.config(['$routeProvider',
             }).
             when('/t/:table', {
                 templateUrl: 'hbaseHtml/tableContent.html',
-                controller: 'tableContentCtrl'
+                controller: 'tableContentCtrl',
+                reloadOnSearch: false
             }).
             when('/compare/:ns1/:tableName1/:ns2/:tableName2', {
                 templateUrl: 'hbaseHtml/tableCompare.html',

@@ -1,15 +1,51 @@
 /**
+ * @param s {string}
+ * @return {string}
+ */
+function hexParser(s) {
+    for (var i = 0; i < s.length; i++) {
+        var a = s.charAt(i)
+
+        if (!('0' <= a && a <= '9' || 'a' <= a && a <= 'z' || 'A' <= a && a <= 'Z')) {
+            throw "Unexpected symbol " + a + " at position " + i
+        }
+    }
+
+    s = s.toUpperCase()
+
+    if ((s.length & 1) != 0) {
+        return '0' + s
+    }
+
+    return s
+}
+
+function hexEditorFactory(editor) {
+    editor.attr('placeholder', 'Start row (hex)')
+}
+
+function hexToStr(s) {
+    return s
+}
+
+/**
  * @constructor
  * @param name {string}
  * @param f {function}
  * @param description {string}
  * @param supportedAttrs {string[]}
+ * @param parser {function}
+ * @param toStr {function}
+ * @param editorFactory {function}
  */
-function Renderer(name, f, description, supportedAttrs) {
+function Renderer(name, f, description, supportedAttrs, parser, toStr, editorFactory) {
     this.name = name
     this.f = f
     this.description = description ? description : name
     this.supportedAttrs = supportedAttrs ? supportedAttrs : []
+    this.parser = parser || hexParser
+    this.toStr = toStr || hexToStr
+    this.editorFactory = editorFactory || hexEditorFactory
 }
 
 /**
@@ -75,7 +111,7 @@ function hexFormatter(m, attr) {
     return res.join('')
 }
 
-var hexRenderer = new Renderer("hex", hexFormatter, null, ['maxLength', 'noWrap'])
+var hexRenderer = new Renderer("hex", hexFormatter, null, ['maxLength', 'noWrap'], hexParser, hexToStr, hexEditorFactory)
 
 var stringRenderer = new Renderer("string", function(m, attr) {
     var res = []

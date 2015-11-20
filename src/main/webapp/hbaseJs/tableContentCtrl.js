@@ -10,14 +10,20 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
     $scope.namespace = table.substring(0, idx)
     $scope.simpleTableName = table.substring(idx + 1)
 
-    var param = $location.search()
+    var params = $location.search()
 
-    $scope.startRow = param.startRow || ''
+    $scope.keyFormat = {
+        renderer: hexRenderer,
+        rendererAttr: {}
+    }
 
-    $scope.stopRow = param.stopRow || ''
+    $scope.$watch('keyFormat.renderer', function(oldRenderer, newRenderer) {
+        $scope.startRowText = newRenderer.toStr(params.startRow || '')
+        newRenderer.editorFactory($('#startRowInput'))
+    })
 
-    $http.get("/hbasedata/firstScan", {params: {table: $routeParams.table, startRow: $scope.startRow,
-        stopRow: $scope.stopRow}}).then(function (response) {
+    $http.get("/hbasedata/firstScan", {params: {table: $routeParams.table, startRow: params.startRow,
+        stopRow: params.stopRow}}).then(function (response) {
         var f = response.data.table.families
 
         /** @type {Family[]} */
@@ -35,14 +41,14 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
 
         $scope.tableView = response.data.tableView
 
-        $scope.keyFormat = {
-            renderer: findRendererByName($scope.tableView.key.rendererName, hexRenderer),
-            rendererAttr: safeParseJson($scope.tableView.key.rendererAttr)
-        }
+        $scope.keyFormat.renderer = findRendererByName($scope.tableView.key.rendererName, hexRenderer)
+        $scope.keyFormat.rendererAttr = safeParseJson($scope.tableView.key.rendererAttr)
 
         if (!$scope.keyFormat.rendererAttr) {
             $scope.keyFormat.rendererAttr = {maxLength: "0", noWrap: true}
         }
+
+        $scope.keyFormat.renderer.editorFactory
 
         mergeRows($scope, response.data.scan.rows)
     }, httpErrorHandler)
@@ -147,6 +153,41 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
                 }
             }
         });
+    }
+
+    $scope.refreshData = function() {
+        for (var i = 0; i < $scope.families.length; i++) {
+            $scope.families[i].columnMap = {}
+            $scope.families[i].columns = []
+        }
+
+        $scope.data = null
+
+        var params = $location.search()
+
+        $http.get("/hbasedata/scan", {params: {table: table, startRow: params.startRow,
+            stopRow: params.stopRow}}).then(function (response) {
+            var res = response.data
+
+            $scope.data = []
+
+            $scope.nextRowKey = res.nextRowKey
+
+            mergeRows($scope, res.rows)
+        }, httpErrorHandler)
+    }
+
+    $scope.applyStartStopRow = function() {
+        try {
+            var startRow = $scope.keyFormat.renderer.parser($scope.startRowText)
+        }
+        catch (error) {
+            return
+        }
+
+        $location.search('startRow', startRow)
+
+        $scope.refreshData()
     }
 });
 
