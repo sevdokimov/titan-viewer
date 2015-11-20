@@ -8,7 +8,5 @@ hbaseViewer.controller('tableComparatorCtrl', function ($scope, $http, $routePar
     $http.get("/hbasedata/compare", {params: {table1: $scope.ns1 + ':' + $scope.tableName1,
         table2: $scope.ns2 + ':' + $scope.tableName2}}).then(function (response) {
         $scope.result = response.data
-    }, function(response) {
-        window.location = "/remoteError.html"
-    })
+    }, httpErrorHandler)
 });

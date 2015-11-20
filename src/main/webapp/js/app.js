@@ -22,3 +22,14 @@ titanViewApp.config(['$routeProvider',
                 redirectTo: '/'
             });
     }]);
+
+var wasHttpError
+
+var httpErrorHandler = function(response) {
+    if (wasHttpError)
+        return
+
+    wasHttpError = true
+
+    $('body').html(response.data)
+}

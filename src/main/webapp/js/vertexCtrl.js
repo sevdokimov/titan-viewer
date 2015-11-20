@@ -4,23 +4,17 @@ titanViewApp.controller('vertexCtrl', function ($scope, $http, $routeParams) {
 
     $http.get("/data/vertex", {params: {vId: $routeParams.vId, table: $routeParams.table}}).then(function (response) {
         $scope.v = response.data
-    }, function(response) {
-        window.location = "/remoteError.html"
-    })
+    }, httpErrorHandler)
 
     $http.get("/data/vertexEdgesAllLabels", {params: {vId: $routeParams.vId, dir: "in", table: $routeParams.table}})
         .then(function (response) {
             $scope.inE = response.data
 
-        }, function(response) {
-            window.location = "/remoteError.html"
-        })
+        }, httpErrorHandler)
     $http.get("/data/vertexEdgesAllLabels", {params: {vId: $routeParams.vId, dir: "out", table: $routeParams.table}})
         .then(function (response) {
             $scope.outE = response.data
-        }, function(response) {
-            window.location = "/remoteError.html"
-        })
+        }, httpErrorHandler)
 });
 
 titanViewApp.controller('selectGraphCtrl', function ($scope, $http, $location) {
@@ -28,7 +22,5 @@ titanViewApp.controller('selectGraphCtrl', function ($scope, $http, $location) {
         $scope.titanTables = response.data.titanTables
 
         $scope.hbaseTables = response.data.hbaseTables
-    }, function(response) {
-        window.location = "/remoteError.html"
-    })
+    }, httpErrorHandler)
 });

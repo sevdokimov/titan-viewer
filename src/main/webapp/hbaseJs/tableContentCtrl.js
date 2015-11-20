@@ -45,9 +45,7 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         }
 
         mergeRows($scope, response.data.scan.rows)
-    }, function() {
-        window.location = "/remoteError.html"
-    })
+    }, httpErrorHandler)
 
     $scope.loadNext = function() {
         if (!$scope.nextRowKey)
@@ -232,9 +230,7 @@ function loadRows($scope, $http, startRow, table) {
         $scope.nextRowKey = res.nextRowKey
 
         mergeRows($scope, res.rows)
-    }, function() {
-        window.location = "/remoteError.html"
-    })
+    }, httpErrorHandler)
 }
 
 hbaseViewer.controller('keyPropsCtrl', function ($scope, $http, $uibModalInstance, table, keyFormat) {

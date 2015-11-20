@@ -34,9 +34,7 @@ titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams, $w
         $http.get("/data/vertexList", {params: {table: $routeParams.table}}).then(function (response) {
             $scope.res = response.data
             $scope.loading = false
-        }, function(response) {
-            window.location = "/remoteError.html"
-        })
+        }, httpErrorHandler)
     }
     else {
         $http.get("/data/openGraph", {params: {table: $routeParams.table}}).then(function (response) {
@@ -67,9 +65,7 @@ titanViewApp.controller('consoleCtrl', function ($scope, $http, $routeParams, $w
             .then(function (response) {
                 $scope.res = response.data
                 $scope.loading = false
-            }, function (response) {
-                window.location = "/remoteError.html"
-            })
+            }, httpErrorHandler)
     }
 
     $scope.typeOf = function(o) {
