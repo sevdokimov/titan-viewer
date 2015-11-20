@@ -1,6 +1,6 @@
 package com.behavox.hbaseView.titan;
 
-import com.behavox.hbaseView.titan.viewModel.Config;
+import com.behavox.hbaseView.titan.viewModel.TitanConfig;
 import com.behavox.hbaseView.titan.viewModel.VertexType;
 import com.behavox.hbaseView.titan.viewModel.PropertyPredicate;
 import com.behavox.hbaseView.titan.viewModel.StringFormatter;
@@ -10,17 +10,17 @@ import java.util.Arrays;
 /**
  *
  */
-public class ConfigManager {
-    private static ConfigManager ourInstance = new ConfigManager();
+public class TitanConfigManager {
+    private static TitanConfigManager ourInstance = new TitanConfigManager();
 
-    private Config cfg = createConfig();
+    private TitanConfig cfg = createConfig();
 
-    public static ConfigManager getInstance() {
+    public static TitanConfigManager getInstance() {
         return ourInstance;
     }
 
-    private static Config createConfig() {
-        Config cfg = new Config();
+    private static TitanConfig createConfig() {
+        TitanConfig cfg = new TitanConfig();
 
         cfg.setPropertiesOrder(Arrays.asList("type", "db_id", "first_name", "last_name"));
 
@@ -39,10 +39,10 @@ public class ConfigManager {
         return cfg;
     }
 
-    private ConfigManager() {
+    private TitanConfigManager() {
     }
 
-    public Config getConfig() {
+    public TitanConfig getConfig() {
         return cfg;
     }
 

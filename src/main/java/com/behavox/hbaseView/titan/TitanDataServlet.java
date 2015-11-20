@@ -7,7 +7,7 @@ import com.behavox.hbaseView.titan.json.FullVertexJson;
 import com.behavox.hbaseView.titan.json.HalfEdgeJson;
 import com.behavox.hbaseView.titan.json.ObjectJson;
 import com.behavox.hbaseView.titan.json.ShortEdgeJson;
-import com.behavox.hbaseView.titan.viewModel.Config;
+import com.behavox.hbaseView.titan.viewModel.TitanConfig;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.thinkaurelius.titan.core.TitanEdge;
@@ -132,8 +132,8 @@ public class TitanDataServlet extends AbstractServlet {
         }
     }
 
-    protected Config getConfig() {
-        return (Config) getRequest().getAttribute("cfg");
+    protected TitanConfig getConfig() {
+        return (TitanConfig) getRequest().getAttribute("cfg");
     }
 
     public QueryResult vertexList(TitanGraph g, HttpServletRequest req) {

@@ -24,7 +24,7 @@ public class TitanUtils {
     }
 
     public static ShortVertexJson format(@NotNull TitanVertex v) {
-        Config cfg = ConfigManager.getInstance().getConfig();
+        TitanConfig cfg = TitanConfigManager.getInstance().getConfig();
 
         ElementType<TitanVertex, ShortVertexJson> type = cfg.findType(v);
 
@@ -36,7 +36,7 @@ public class TitanUtils {
     }
 
     public static String format(@NotNull TitanEdge edge) {
-        Config cfg = ConfigManager.getInstance().getConfig();
+        TitanConfig cfg = TitanConfigManager.getInstance().getConfig();
 
         ElementType<TitanEdge, String> type = cfg.findType(edge);
 

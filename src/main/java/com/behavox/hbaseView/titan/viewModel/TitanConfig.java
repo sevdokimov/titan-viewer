@@ -10,7 +10,7 @@ import java.util.function.Function;
 /**
  *
  */
-public class Config {
+public class TitanConfig {
 
     private Comparator<String> propComparator = (o1, o2) -> 0;
 

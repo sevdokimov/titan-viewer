@@ -1,6 +1,6 @@
 package com.behavox.hbaseView.titan.viewModel;
 
-import com.behavox.hbaseView.titan.ConfigManager;
+import com.behavox.hbaseView.titan.TitanConfigManager;
 import com.behavox.hbaseView.titan.json.ShortVertexJson;
 import com.google.common.html.HtmlEscapers;
 import com.thinkaurelius.titan.core.TitanVertex;
@@ -21,7 +21,7 @@ public class DefaultVertexFormatter implements ElementFormatter<TitanVertex, Sho
     @Override
     public ShortVertexJson format(@NotNull TitanVertex v) {
         List<String> propertyKeys = new ArrayList<>(v.getPropertyKeys());
-        propertyKeys.sort(ConfigManager.getInstance().getConfig().getPropComparator());
+        propertyKeys.sort(TitanConfigManager.getInstance().getConfig().getPropComparator());
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 

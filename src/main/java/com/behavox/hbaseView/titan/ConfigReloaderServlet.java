@@ -18,7 +18,7 @@ public class ConfigReloaderServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ConfigManager.getInstance().reload();
+        TitanConfigManager.getInstance().reload();
 
         log.info("UI config was reloaded");
     }
