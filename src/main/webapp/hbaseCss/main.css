@@ -7,16 +7,22 @@ body {
     font-size: 14px;
 }
 
-.dHex {
+.dHex, .dHexEditor {
     /*color: saddlebrown;*/
-    font-size: 10px;
     font-family: monospace;
+}
+
+.dHex {
+    font-size: 10px;
     white-space: pre-wrap;
     word-break: break-all;
 }
 
-.dStr {
+.Str, .dStrEditor {
     color: #080;
+}
+
+.dStr {
     font-size: 12px;
     white-space: pre-wrap;
     word-break: break-all;

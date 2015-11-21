@@ -17,9 +17,9 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         rendererAttr: {}
     }
 
-    $scope.$watch('keyFormat.renderer', function(oldRenderer, newRenderer) {
+    $scope.$watch('keyFormat.renderer', function(newRenderer) {
         $scope.startRowText = newRenderer.toStr(params.startRow || '')
-        newRenderer.editorFactory($('#startRowInput'))
+        newRenderer.prepareEditor($('#startRowInput'))
     })
 
     $http.get("/hbasedata/firstScan", {params: {table: $routeParams.table, startRow: params.startRow,
@@ -47,8 +47,6 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         if (!$scope.keyFormat.rendererAttr) {
             $scope.keyFormat.rendererAttr = {maxLength: "0", noWrap: true}
         }
-
-        $scope.keyFormat.renderer.editorFactory
 
         mergeRows($scope, response.data.scan.rows)
     }, httpErrorHandler)

@@ -21,7 +21,11 @@ function hexParser(s) {
 }
 
 function hexEditorFactory(editor) {
-    editor.attr('placeholder', 'Start row (hex)')
+    editor.attr('placeholder', 'hex').addClass('dHexEditor')
+}
+
+function strEditorFactory(editor) {
+    editor.attr('placeholder', 'string').addClass('dStrEditor')
 }
 
 function hexToStr(s) {
@@ -67,6 +71,17 @@ Renderer.prototype.render = function(m, attr) {
     }
 
     return res
+}
+
+Renderer.prototype.prepareEditor = function(editor) {
+    var classList = editor.attr('class').split(/\s+/);
+
+    for (var i = 0; i < classList.length; i++) {
+        if (classList[i].match(/Editor$/))
+            editor.removeClass(classList[i])
+    }
+
+    this.editorFactory(editor)
 }
 
 /**
@@ -141,18 +156,7 @@ var stringRenderer = new Renderer("string", function(m, attr) {
 
     res.push("'>")
 
-    for (var i = 0; i < m.length; i += 2) {
-        var x = String.fromCharCode(parseInt(m.substr(i, 2), 16))
-
-        if (x == '<')
-            res.push('&lt;')
-        else if (x == '>')
-            res.push('&gt;')
-        else if (x == '&')
-            res.push('&amp;')
-        else
-            res.push(x)
-    }
+    hexToRubyStrBuff(res, m)
 
     res.push("</span>")
 
@@ -161,7 +165,7 @@ var stringRenderer = new Renderer("string", function(m, attr) {
     }
 
     return res.join('')
-}, null, ['maxLength', 'noWrap'])
+}, null, ['maxLength', 'noWrap'], rubyStrToHex, hexToRubyStr, strEditorFactory)
 
 var boolRenderer = new Renderer("boolean", function(m, attr) {
     if (m == '00') {
