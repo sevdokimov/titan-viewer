@@ -17,13 +17,15 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         rendererAttr: {}
     }
 
+    $scope.filter = params.filter
+
     $scope.$watch('keyFormat.renderer', function(newRenderer) {
         $scope.startRowText = newRenderer.toStr(params.startRow || '')
         newRenderer.prepareEditor($('#startRowInput'))
     })
 
     $http.get("/hbasedata/firstScan", {params: {table: $routeParams.table, startRow: params.startRow,
-        stopRow: params.stopRow}}).then(function (response) {
+        filter: $scope.filter}}).then(function (response) {
         var f = response.data.table.families
 
         /** @type {Family[]} */
@@ -164,7 +166,7 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         var params = $location.search()
 
         $http.get("/hbasedata/scan", {params: {table: table, startRow: params.startRow,
-            stopRow: params.stopRow}}).then(function (response) {
+            filter: $scope.filter}}).then(function (response) {
             var res = response.data
 
             $scope.data = []
@@ -263,7 +265,7 @@ function mergeRows($scope, rows) {
 }
 
 function loadRows($scope, $http, startRow, table) {
-    $http.get("/hbasedata/scan", {params: {table: table, startRow: startRow}}).then(function (response) {
+    $http.get("/hbasedata/scan", {params: {table: table, startRow: startRow, filter: $scope.filter}}).then(function (response) {
         var res = response.data
 
         $scope.nextRowKey = res.nextRowKey

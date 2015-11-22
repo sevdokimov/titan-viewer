@@ -2,6 +2,7 @@ package com.behavox.hbaseView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -16,6 +17,8 @@ import java.io.IOException;
 public class Utils {
 
     public static final Gson GSON = new Gson();
+
+    public static final JsonParser GSON_PARSER = new JsonParser();
 
     public static final Gson BHEX_GSON = new GsonBuilder().registerTypeAdapter(byte[].class, new TypeAdapter<byte[]>() {
 

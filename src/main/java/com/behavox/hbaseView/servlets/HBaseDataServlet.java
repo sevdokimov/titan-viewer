@@ -1,5 +1,6 @@
 package com.behavox.hbaseView.servlets;
 
+import com.behavox.hbaseView.FilterUtils;
 import com.behavox.hbaseView.HBaseManager;
 import com.behavox.hbaseView.Utils;
 import com.behavox.hbaseView.hbase.view.HBaseConfigManager;
@@ -264,10 +265,15 @@ public class HBaseDataServlet extends AbstractServlet {
             scan.setStopRow(Bytes.fromHex(stopRow));
         }
 
+        String filter = request.getParameter("filter");
+        if (filter != null && !filter.isEmpty()) {
+            scan.setFilter(FilterUtils.toHBaseFilter(filter));
+        }
+
         int limit = 30;
 
         scan.setMaxResultsPerColumnFamily(1024);
-        scan.setBatch(limit + 1);
+        scan.setMaxResultSize(limit + 1);
 
         ScanResult res = new ScanResult();
 
