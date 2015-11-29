@@ -94,9 +94,17 @@ function hexToRubyStrBuff(res, m) {
             res.push('&gt;')
         else if (x == '&')
             res.push('&amp;')
-        else if (charCode <= 0x1f) {
-            res.push('\\x')
-            res.push(charCode.toString(16))
+        else if (charCode <= 0x1f && charCode != 10 && charCode != 13 && charCode != 9) {
+            var s16 = charCode.toString(16)
+
+            if (s16.length == 1) {
+                res.push('\\x0')
+            }
+            else {
+                res.push('\\x')
+            }
+
+            res.push(s16)
         }
         else {
             res.push(x)
