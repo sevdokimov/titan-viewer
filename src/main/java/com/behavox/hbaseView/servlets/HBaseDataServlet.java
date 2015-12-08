@@ -270,6 +270,23 @@ public class HBaseDataServlet extends AbstractServlet {
             scan.setFilter(FilterUtils.toHBaseFilter(filter));
         }
 
+        String[] columns = request.getParameterValues("column");
+
+        if (columns != null && columns.length > 0) {
+            for (String column : columns) {
+                int idx = column.indexOf(':');
+                if (idx == -1) {
+                    HColumnDescriptor[] columnFamilies = hTable.getTableDescriptor().getColumnFamilies();
+                    if (columnFamilies.length != 1)
+                        throw new RuntimeException("Column list is specified incorrectly");
+
+                    scan.addColumn(columnFamilies[0].getName(), Bytes.toBytes(column));
+                }
+
+                scan.addColumn(Bytes.toBytes(column.substring(0, idx)), Bytes.toBytes(column.substring(idx + 1)));
+            }
+        }
+
         int limit = 30;
 
         scan.setMaxResultsPerColumnFamily(1024);
