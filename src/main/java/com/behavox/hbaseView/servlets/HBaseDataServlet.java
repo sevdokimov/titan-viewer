@@ -30,6 +30,8 @@ import java.util.stream.Stream;
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class HBaseDataServlet extends AbstractServlet {
 
+    private static final int MAX_CELL_SIZE = 20 * 1024;
+
     private static final Logger log = LoggerFactory.getLogger(HBaseDataServlet.class);
 
     private static final Map<String, Method> methods = new HashMap<>();
@@ -285,18 +287,16 @@ public class HBaseDataServlet extends AbstractServlet {
 
         int limit = 30;
 
-        scan.setMaxResultsPerColumnFamily(1024);
         scan.setMaxResultSize(limit + 1);
 
         ScanResult res = new ScanResult();
 
-        try (ResultScanner result = hTable.getScanner(scan)) {
-            Result row;
-            while ((row = result.next()) != null) {
-                res.rows.add(new RowDescr(row));
+        try (ResultScanner resultScanner = hTable.getScanner(scan)) {
+            for (Result result : resultScanner) {
+                res.rows.add(new RowDescr(result));
 
                 if (res.rows.size() >= limit) {
-                    Result nextRow = result.next();
+                    Result nextRow = resultScanner.next();
 
                     if (nextRow != null) {
                         res.nextRowKey = nextRow.getRow();
@@ -356,8 +356,12 @@ public class HBaseDataServlet extends AbstractServlet {
                 Map<String, byte[]> m = new LinkedHashMap<>();
 
                 fMap.forEach((q, value) -> {
-                    if (value != null)
+                    if (value != null) {
+                        if (value.length > MAX_CELL_SIZE)
+                            value = Arrays.copyOf(value, MAX_CELL_SIZE);
+
                         m.put(Bytes.toString(q), value);
+                    }
                 });
 
                 if (!m.isEmpty())
