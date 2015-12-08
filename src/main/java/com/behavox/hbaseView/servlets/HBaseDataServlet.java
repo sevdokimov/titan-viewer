@@ -88,11 +88,7 @@ public class HBaseDataServlet extends AbstractServlet {
             try {
                 res = method.invoke(this, args);
             } catch (InvocationTargetException e) {
-                if (e.getCause() instanceof IOException) {
-                    throw (IOException) e.getCause();
-                }
-
-                throw Throwables.propagate(e);
+                throw e.getTargetException();
             } catch (IllegalAccessException e) {
                 throw Throwables.propagate(e);
             }
