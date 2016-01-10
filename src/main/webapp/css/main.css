@@ -78,11 +78,6 @@ body {
     color: #888;
 }
 
-.queryError {
-    color: #f00;
-    white-space: pre;
-}
-
 .toolicon {
     display: inline-block;
     cursor: pointer;

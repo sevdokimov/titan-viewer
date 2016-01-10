@@ -7,21 +7,29 @@
              uib-popover-template="'selectNamespacePopover.html'" popover-placement="right"
              popover-title="Select namespace to compare"
         >
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <form class="form-inline" style="padding-top: 15px" ng-submit="applyStartStopRow()">
+                <div class="form-group">
+                    <label for="startRowInput">Start row:</label>
+                    <input id="startRowInput" type="text" class="form-control" ng-model="startRowText">
+                </div>
 
-        <form class="form-inline" style="padding-top: 15px" ng-submit="applyStartStopRow()">
-            <div class="form-group">
-                <label for="startRowInput">Start row:</label>
-                <input id="startRowInput" type="text" class="form-control" ng-model="startRowText">
-            </div>
+                <button type="submit" class="btn btn-default">Apply</button>
+            </form>
+        </div>
 
-            <button type="submit" class="btn btn-default">Apply</button>
-        </form>
+        <div class="col-md-8">
+            <div id="gFilterEditor"></div>
+            <button class="btn btn-default" ng-click="applyGFilter()">Apply</button>
+        </div>
     </div>
 
     <div style="height: 20px;"></div>
 
     <div class="row">
-        <div ng-if="!data">
+        <div ng-if="loading">
             <img src="../img/progress.gif"> Loading...
         </div>
 
@@ -63,6 +71,8 @@
 
             <button ng-if="nextRowKey" ng-click="loadNext()">Next 30 rows</button>
         </div>
+
+        <div ng-if="scanError" class="queryError">{{scanError}}</div>
     </div>
 </div>
 
@@ -147,7 +157,7 @@
             <img src="../img/progress.gif"> Loading...
         </div>
 
-        <div class="cellDataContainer" ng-if="value" ng-bind-html="render(value)">
+        <div class="cellDataContainer" ng-if="value" ng-bind-html="render(value)"></div>
     </div>
     <div class="modal-footer">
         <button class="btn btn-primary" type="button" ng-click="cancel()">Close</button>
@@ -160,4 +170,18 @@
             <a ng-href="#/compare/{{namespace}}/{{simpleTableName}}/{{ns}}/{{simpleTableName}}" target="_blank">{{ns}}</a>
         </div>
     </div>
+</script>
+
+<script>
+    var editor = ace.edit("gFilterEditor");
+    editor.setOptions({
+        showPrintMargin: false,
+        highlightActiveLine: false,
+        highlightGutterLine: false,
+        showLineNumbers: false,
+        showGutter: false,
+        fontSize: 14
+    })
+    editor.getSession().setMode("ace/mode/groovy");
+
 </script>

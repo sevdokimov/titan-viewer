@@ -1,4 +1,6 @@
-hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams, $uibModal, $location) {
+var defaultGFilter = "// new SingleColumnValueFilter(toBytes(family), toBytes(qualifier), CompareOp.EQUAL, toBytes('aaa'))"
+
+hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams, $uibModal, $location, $window) {
     var table = $routeParams.table
 
     $scope.table = table
@@ -18,6 +20,7 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
     }
 
     $scope.filter = params.filter
+    $scope.gFilter = params.gFilter
 
     $scope.$watch('keyFormat.renderer', function(newRenderer) {
         $scope.startRowText = newRenderer.toStr(params.startRow || '')
@@ -26,8 +29,12 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
 
     $scope.loadedColumns = params.column
 
+    $scope.loading = true
+
     $http.get("/hbasedata/firstScan", {params: {table: $routeParams.table, startRow: params.startRow, column: $scope.loadedColumns,
-        filter: $scope.filter}}).then(function (response) {
+        filter: $scope.filter, gFilter: $scope.gFilter}}).then(function (response) {
+        $scope.loading = false
+
         var f = response.data.table.families
 
         /** @type {Family[]} */
@@ -36,10 +43,6 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         for (var i = 0; i < f.length; i++) {
             $scope.families.push(new Family(f[i]))
         }
-
-        $scope.nextRowKey = response.data.scan.nextRowKey
-
-        $scope.data = []
 
         $scope.otherNamespaces = response.data.otherNamespaces
 
@@ -52,7 +55,15 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
             $scope.keyFormat.rendererAttr = {maxLength: "0", noWrap: true}
         }
 
-        mergeRows($scope, response.data.scan.rows)
+        $scope.scanError = response.data.scan.error
+
+        if (!response.data.scan.error) {
+            $scope.nextRowKey = response.data.scan.nextRowKey
+
+            $scope.data = []
+
+            mergeRows($scope, response.data.scan.rows)
+        }
     }, httpErrorHandler)
 
     $scope.loadNext = function() {
@@ -164,18 +175,25 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
         }
 
         $scope.data = null
+        $scope.loading = true
+        $scope.scanError = null
 
         var params = $location.search()
 
         $http.get("/hbasedata/scan", {params: {table: table, startRow: params.startRow, column: $scope.loadedColumns,
-            filter: $scope.filter}}).then(function (response) {
-            var res = response.data
+            filter: $scope.filter, gFilter: $scope.gFilter}}).then(function (response) {
 
-            $scope.data = []
+            $scope.loading = false
 
-            $scope.nextRowKey = res.nextRowKey
+            $scope.scanError = response.data.error
 
-            mergeRows($scope, res.rows)
+            if (!$scope.scanError) {
+                $scope.nextRowKey = response.data.nextRowKey
+
+                $scope.data = []
+
+                mergeRows($scope, response.data.rows)
+            }
         }, httpErrorHandler)
     }
 
@@ -191,6 +209,22 @@ hbaseViewer.controller('tableContentCtrl', function ($scope, $http, $routeParams
 
         $scope.refreshData()
     }
+
+    $scope.applyGFilter = function() {
+        $scope.gFilter = $window.editor.getValue()
+
+        if (defaultGFilter == $scope.gFilter) {
+            $location.search('gFilter', null)
+        }
+        else {
+            $location.search('gFilter', $scope.gFilter)
+        }
+
+        $scope.refreshData()
+    }
+
+    $window.editor.setValue($scope.gFilter || defaultGFilter)
+    $window.editor.selection.clearSelection()
 });
 
 /**
@@ -267,13 +301,15 @@ function mergeRows($scope, rows) {
 }
 
 function loadRows($scope, $http, startRow, table) {
-    $http.get("/hbasedata/scan", {params: {table: table, startRow: startRow, filter: $scope.filter, column: $scope.loadedColumns}})
+    $http.get("/hbasedata/scan", {params: {table: table, startRow: startRow, filter: $scope.filter, gFilter: $scope.gFilter, column: $scope.loadedColumns}})
         .then(function (response) {
-        var res = response.data
+            $scope.scanError = response.data.error
 
-        $scope.nextRowKey = res.nextRowKey
+            if (!$scope.scanError) {
+                $scope.nextRowKey = response.data.nextRowKey
 
-        mergeRows($scope, res.rows)
+                mergeRows($scope, response.data.rows)
+            }
     }, httpErrorHandler)
 }
 

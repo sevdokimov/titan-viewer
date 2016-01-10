@@ -5,15 +5,18 @@ import com.behavox.hbaseView.HBaseManager;
 import com.behavox.hbaseView.Utils;
 import com.behavox.hbaseView.hbase.view.HBaseConfigManager;
 import com.behavox.hbaseView.hbase.view.TableView;
+import com.behavox.hbaseView.titan.TitanUtils;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.BinaryComparator;
+import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -263,9 +266,25 @@ public class HBaseDataServlet extends AbstractServlet {
             scan.setStopRow(Bytes.fromHex(stopRow));
         }
 
+        ScanResult res = new ScanResult();
+
         String filter = request.getParameter("filter");
         if (filter != null && !filter.isEmpty()) {
             scan.setFilter(FilterUtils.toHBaseFilter(filter));
+        }
+        else {
+            String gFilter = request.getParameter("gFilter");
+
+            if (!HbaseGFilterManager.isEmptyOrComment(gFilter)) {
+                try {
+                    Filter f = HbaseGFilterManager.getInstance().evaluateFilter(gFilter);
+
+                    scan.setFilter(f);
+                } catch (ScriptException e) {
+                    res.error = TitanUtils.toString(e);
+                    return res;
+                }
+            }
         }
 
         String[] columns = request.getParameterValues("column");
@@ -288,8 +307,6 @@ public class HBaseDataServlet extends AbstractServlet {
         int limit = 30;
 
         scan.setMaxResultSize(limit + 1);
-
-        ScanResult res = new ScanResult();
 
         try (ResultScanner resultScanner = hTable.getScanner(scan)) {
             for (Result result : resultScanner) {
@@ -374,6 +391,8 @@ public class HBaseDataServlet extends AbstractServlet {
         private byte[] nextRowKey;
 
         private final List<RowDescr> rows = new ArrayList<>();
+
+        private String error;
     }
 
     private static class TableDescrAndContent {
