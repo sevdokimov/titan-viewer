@@ -1,13 +1,13 @@
 package com.behavox.hbaseView.titan.viewModel;
 
-import com.thinkaurelius.titan.core.TitanElement;
+import org.apache.tinkerpop.gremlin.structure.Element;
 
 import java.util.function.Predicate;
 
 /**
  *
  */
-public class ElementType<T extends TitanElement, R> {
+public class ElementType<T extends Element, R> {
 
     protected final Predicate<? super T> predicate;
 

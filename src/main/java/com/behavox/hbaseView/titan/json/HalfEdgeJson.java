@@ -1,8 +1,8 @@
 package com.behavox.hbaseView.titan.json;
 
 import com.behavox.hbaseView.titan.TitanUtils;
-import com.thinkaurelius.titan.core.TitanEdge;
-import com.thinkaurelius.titan.core.TitanVertex;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,12 +16,17 @@ public class HalfEdgeJson {
 
     private final ShortVertexJson shortView;
 
-    public HalfEdgeJson(@NotNull TitanVertex src, @NotNull TitanEdge edge) {
-        id = edge.getId().toString();
+    public HalfEdgeJson(@NotNull Vertex src, @NotNull Edge edge) {
+        id = edge.id().toString();
 
-        label = edge.getLabel();
+        label = edge.label();
 
-        this.shortView = TitanUtils.format(edge.getOtherVertex(src));
+        if (src.equals(edge.inVertex())) {
+            this.shortView = TitanUtils.format(edge.outVertex());
+        }
+        else {
+            this.shortView = TitanUtils.format(edge.inVertex());
+        }
     }
 
     public String getId() {

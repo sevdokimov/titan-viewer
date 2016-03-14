@@ -1,7 +1,6 @@
 package com.behavox.hbaseView.titan.json;
 
 import com.behavox.hbaseView.titan.TitanUtils;
-import com.thinkaurelius.titan.core.TitanProperty;
 import com.thinkaurelius.titan.core.TitanVertex;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,10 +19,10 @@ public class FullVertexJson {
     private ShortVertexJson shortView;
 
     public FullVertexJson(@NotNull TitanVertex v) {
-        label = v.getLabel();
+        label = v.label();
 
-        for (TitanProperty property : v.getProperties()) {
-            props.put(property.getPropertyKey().getName(), property.getValue());
+        for (String propertyName : v.keys()) {
+            props.put(propertyName, v.property(propertyName).value());
         }
 
         shortView = TitanUtils.format(v);

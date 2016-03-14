@@ -55,7 +55,7 @@ public class GraphManager {
                             if (graph != null) {
                                 log.info("Disconnect from graph by timeout: {}", entry.getKey());
 
-                                graph.shutdown();
+                                graph.close();
                             }
                         }
                     }

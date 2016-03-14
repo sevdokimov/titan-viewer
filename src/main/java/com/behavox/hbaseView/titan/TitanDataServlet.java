@@ -13,13 +13,14 @@ import com.google.common.base.Throwables;
 import com.thinkaurelius.titan.core.TitanEdge;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.TitanVertex;
-import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.gremlin.groovy.jsr223.GremlinGroovyScriptEngine;
-import com.tinkerpop.gremlin.java.GremlinPipeline;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.tinkerpop.gremlin.groovy.jsr223.GremlinGroovyScriptEngine;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,14 +122,14 @@ public class TitanDataServlet extends AbstractServlet {
             log.error("Failed to handle data-request", t);
 
             if (graph != null) {
-                graph.rollback();
+                graph.tx().rollback();
                 graph = null;
             }
 
             resp.sendError(505, "Internal error: " + t.toString());
         } finally {
             if (graph != null)
-                graph.commit();
+                graph.tx().commit();
         }
     }
 
@@ -143,7 +144,7 @@ public class TitanDataServlet extends AbstractServlet {
 
         long startTime = System.currentTimeMillis();
 
-        res.fillElements(g.getVertices().iterator(), limit);
+        res.fillElements(g.vertices(), limit);
 
         res.executionTime = System.currentTimeMillis() - startTime;
 
@@ -182,10 +183,10 @@ public class TitanDataServlet extends AbstractServlet {
         try {
             Object r = compiledScript.eval(bindings);
 
-            if (r instanceof GremlinPipeline) {
-                Iterator<Object> itr = ((GremlinPipeline) r).iterator();
+            if (r instanceof GraphTraversal) {
+                List<Object> itr = ((GraphTraversal) r).limit(limit).toList();
 
-                res.fillElements(itr, limit);
+                res.fillElements(itr.iterator(), limit);
             }
             else {
                 res.convertAndAdd(r);
@@ -202,9 +203,12 @@ public class TitanDataServlet extends AbstractServlet {
     public Object vertex(TitanGraph g, HttpServletRequest req) {
         long id = getLongParam("vId");
 
-        TitanVertex vertex = g.getVertex(id);
+        Iterator<Vertex> itr = g.vertices(id);
 
-        return vertex == null ? null : new FullVertexJson(vertex);
+        if (!itr.hasNext())
+            return null;
+
+        return new FullVertexJson((TitanVertex) itr.next());
     }
 
     public List<String> edgeLabels(TitanGraph g, HttpServletRequest req) {
@@ -218,10 +222,12 @@ public class TitanDataServlet extends AbstractServlet {
     public Map<String, EdgeListResult> vertexEdgesAllLabels(TitanGraph g, HttpServletRequest req) {
         long id = getLongParam("vId");
 
-        TitanVertex vertex = g.getVertex(id);
+        Iterator<Vertex> itr = g.vertices(id);
 
-        if (vertex == null)
+        if (!itr.hasNext())
             return null;
+
+        Vertex vertex = itr.next();
 
         int limit = getIntParam("limit", 10);
 
@@ -230,18 +236,20 @@ public class TitanDataServlet extends AbstractServlet {
         Map<String, EdgeListResult> res = new HashMap<>();
 
         for (String label : TitanUtils.getEdgeLabels(g)) {
-            Iterable<Edge> edges = vertex.getEdges(inVertex ? Direction.IN : Direction.OUT, label);
+            Iterator<Edge> edges = vertex.edges(inVertex ? Direction.IN : Direction.OUT, label);
 
             EdgeListResult edgeList = new EdgeListResult();
 
-            for (Edge edge : edges) {
+            while (edges.hasNext()) {
+                Edge edge = edges.next();
+
                 if (edgeList.edges.size() >= limit) {
                     edgeList.hasNext = true;
 
                     break;
                 }
 
-                HalfEdgeJson edgeJson = new HalfEdgeJson(vertex, (TitanEdge) edge);
+                HalfEdgeJson edgeJson = new HalfEdgeJson(vertex, edge);
 
                 edgeList.edges.add(edgeJson);
             }

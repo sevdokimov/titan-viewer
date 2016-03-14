@@ -1,9 +1,9 @@
 package com.behavox.hbaseView.titan.viewModel;
 
 import com.behavox.hbaseView.titan.json.ShortVertexJson;
-import com.google.common.base.Strings;
 import com.google.common.html.HtmlEscapers;
 import com.thinkaurelius.titan.core.TitanVertex;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  *
  */
-public class StringFormatter implements ElementFormatter<TitanVertex, ShortVertexJson> {
+public class StringFormatter implements ElementFormatter<Vertex, ShortVertexJson> {
 
     private final List<String> props = new ArrayList<>();
 
@@ -34,13 +34,13 @@ public class StringFormatter implements ElementFormatter<TitanVertex, ShortVerte
 
     @NotNull
     @Override
-    public ShortVertexJson format(@NotNull TitanVertex v) {
+    public ShortVertexJson format(@NotNull Vertex v) {
         String[] values = new String[props.size()];
 
         for (int i = 0; i < props.size(); i++) {
-            values[i] = HtmlEscapers.htmlEscaper().escape(Strings.nullToEmpty(v.getProperty(props.get(i))));
+            values[i] = HtmlEscapers.htmlEscaper().escape(v.<String>property(props.get(i)).orElse(""));
         }
 
-        return new ShortVertexJson(v.getLongId(), cls, String.format(format, values));
+        return new ShortVertexJson(((TitanVertex)v).longId(), cls, String.format(format, values));
     }
 }

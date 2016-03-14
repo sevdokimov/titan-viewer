@@ -1,6 +1,6 @@
 package com.behavox.hbaseView.titan.viewModel;
 
-import com.thinkaurelius.titan.core.TitanElement;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +17,7 @@ public class TitanConfig {
     private final List<ElementType> elementTypes = new ArrayList<>();
 
     @Nullable
-    public <T extends TitanElement, R> ElementType<T, R> findType(T element) {
+    public <T extends Element, R> ElementType<T, R> findType(T element) {
         for (ElementType type : elementTypes) {
             if (type.getPredicate().test(element))
                 return type;

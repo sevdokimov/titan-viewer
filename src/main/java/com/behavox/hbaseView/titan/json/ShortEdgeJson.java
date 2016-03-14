@@ -2,7 +2,7 @@ package com.behavox.hbaseView.titan.json;
 
 import com.behavox.hbaseView.titan.TitanUtils;
 import com.thinkaurelius.titan.core.TitanEdge;
-import com.tinkerpop.blueprints.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -23,14 +23,14 @@ public class ShortEdgeJson {
 
     private final String body;
 
-    public ShortEdgeJson(@NotNull TitanEdge edge) {
-        outV = TitanUtils.format(edge.getVertex(Direction.OUT));
-        inV = TitanUtils.format(edge.getVertex(Direction.IN));
+    public ShortEdgeJson(@NotNull Edge edge) {
+        outV = TitanUtils.format(edge.outVertex());
+        inV = TitanUtils.format(edge.inVertex());
 
-        id = edge.getLongId();
-        fullId = edge.getId().toString();
+        id = ((TitanEdge)edge).longId();
+        fullId = edge.id().toString();
 
-        label = edge.getLabel();
+        label = edge.label();
 
         body = TitanUtils.format(edge);
     }

@@ -1,7 +1,7 @@
 package com.behavox.hbaseView.titan.viewModel;
 
 import com.google.common.html.HtmlEscapers;
-import com.thinkaurelius.titan.core.TitanEdge;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
@@ -10,20 +10,20 @@ import java.util.Map;
 /**
  *
  */
-public class DefaultEdgeFormatter implements ElementFormatter<TitanEdge, String> {
+public class DefaultEdgeFormatter implements ElementFormatter<Edge, String> {
 
-    public static final ElementFormatter<TitanEdge, String> INSTANCE = new DefaultEdgeFormatter();
+    public static final ElementFormatter<Edge, String> INSTANCE = new DefaultEdgeFormatter();
 
     @NotNull
     @Override
-    public String format(@NotNull TitanEdge edge) {
+    public String format(@NotNull Edge edge) {
         Map<String, Object> propMap = new LinkedHashMap<>();
 
-        for (String propName : edge.getPropertyKeys()) {
+        for (String propName : edge.keys()) {
             if (propName.equals("name"))
                 continue;
 
-            propMap.put(propName, edge.getProperty(propName));
+            propMap.put(propName, edge.property(propName).value());
         }
 
         if (propMap.isEmpty()) {

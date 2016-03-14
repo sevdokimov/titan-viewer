@@ -3,10 +3,10 @@ package com.behavox.hbaseView.titan;
 import com.behavox.hbaseView.titan.json.ShortVertexJson;
 import com.behavox.hbaseView.titan.viewModel.*;
 import com.thinkaurelius.titan.core.EdgeLabel;
-import com.thinkaurelius.titan.core.TitanEdge;
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanVertex;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintWriter;
@@ -23,24 +23,24 @@ public class TitanUtils {
 
     }
 
-    public static ShortVertexJson format(@NotNull TitanVertex v) {
+    public static ShortVertexJson format(@NotNull Vertex v) {
         TitanConfig cfg = TitanConfigManager.getInstance().getConfig();
 
-        ElementType<TitanVertex, ShortVertexJson> type = cfg.findType(v);
+        ElementType<Vertex, ShortVertexJson> type = cfg.findType(v);
 
-        ElementFormatter<TitanVertex, ShortVertexJson> formatter = type != null
+        ElementFormatter<Vertex, ShortVertexJson> formatter = type != null
                 ? type.getFormatter()
                 : DefaultVertexFormatter.INSTANCE;
 
         return formatter.format(v);
     }
 
-    public static String format(@NotNull TitanEdge edge) {
+    public static String format(@NotNull Edge edge) {
         TitanConfig cfg = TitanConfigManager.getInstance().getConfig();
 
-        ElementType<TitanEdge, String> type = cfg.findType(edge);
+        ElementType<Edge, String> type = cfg.findType(edge);
 
-        ElementFormatter<TitanEdge, String> formatter = type != null ? type.getFormatter() : DefaultEdgeFormatter.INSTANCE;
+        ElementFormatter<Edge, String> formatter = type != null ? type.getFormatter() : DefaultEdgeFormatter.INSTANCE;
 
         return formatter.format(edge);
     }
@@ -48,11 +48,11 @@ public class TitanUtils {
     public static List<String> getEdgeLabels(TitanGraph g) {
         List<String> res = new ArrayList<>();
 
-        TitanManagement mngm = g.getManagementSystem();
+        TitanManagement mngm = g.openManagement();
 
         try {
             for (EdgeLabel edgeLabel : mngm.getRelationTypes(EdgeLabel.class)) {
-                res.add(edgeLabel.getName());
+                res.add(edgeLabel.name());
             }
         } finally {
             mngm.rollback();

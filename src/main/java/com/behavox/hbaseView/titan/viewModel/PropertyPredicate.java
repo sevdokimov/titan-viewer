@@ -1,6 +1,6 @@
 package com.behavox.hbaseView.titan.viewModel;
 
-import com.tinkerpop.blueprints.Vertex;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
@@ -21,6 +21,6 @@ public class PropertyPredicate implements Predicate<Vertex> {
 
     @Override
     public boolean test(Vertex vertex) {
-        return value.equals(vertex.getProperty(propName));
+        return value.equals(vertex.<String>property(propName).orElse(null));
     }
 }
