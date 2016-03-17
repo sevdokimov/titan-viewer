@@ -176,7 +176,8 @@ public class TitanDataServlet extends AbstractServlet {
         }
 
         final Bindings bindings = engine.createBindings();
-        bindings.put("g", g);
+        bindings.put("graph", g);
+        bindings.put("g", g.traversal());
 
         long startTime = System.currentTimeMillis();
 
